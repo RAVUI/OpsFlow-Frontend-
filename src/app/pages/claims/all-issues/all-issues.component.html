@@ -1,0 +1,1831 @@
+<div class="all-issues-page">
+
+  <!-- =====================================================
+       HEADER
+  ====================================================== -->
+
+  <header class="issues-header">
+
+    <div class="header-left">
+
+      <div class="header-icon">
+        <span>⚡</span>
+      </div>
+
+      <div>
+        <div class="eyebrow">
+          OPSFLOW
+        </div>
+
+        <h1>Issue Management</h1>
+
+        <p>
+          Track, assign and resolve operational issues.
+        </p>
+      </div>
+
+    </div>
+
+    <button
+      type="button"
+      class="create-button"
+      (click)="openCreateModal()"
+    >
+      <span class="create-icon">+</span>
+      <span>Create Issue</span>
+    </button>
+
+  </header>
+
+
+  <!-- =====================================================
+       ALERTS
+  ====================================================== -->
+
+  @if (successMessage) {
+
+    <div class="toast success-toast">
+
+      <div class="toast-icon">
+        ✓
+      </div>
+
+      <div class="toast-text">
+        <strong>Success</strong>
+        <span>{{ successMessage }}</span>
+      </div>
+
+      <button
+        type="button"
+        class="toast-close"
+        (click)="successMessage = ''"
+      >
+        ×
+      </button>
+
+    </div>
+
+  }
+
+
+  @if (errorMessage) {
+
+    <div class="toast error-toast">
+
+      <div class="toast-icon">
+        !
+      </div>
+
+      <div class="toast-text">
+        <strong>Something went wrong</strong>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <button
+        type="button"
+        class="toast-close"
+        (click)="errorMessage = ''"
+      >
+        ×
+      </button>
+
+    </div>
+
+  }
+
+
+  <!-- =====================================================
+       TOOLBAR
+  ====================================================== -->
+
+  <section class="toolbar">
+
+    <div class="search-box">
+
+      <span class="search-symbol">
+        ⌕
+      </span>
+
+      <input
+        type="text"
+        [(ngModel)]="searchText"
+        placeholder="Search by title, issue ID, user..."
+      />
+
+      @if (searchText) {
+
+        <button
+          type="button"
+          class="search-clear"
+          (click)="searchText = ''"
+        >
+          ×
+        </button>
+
+      }
+
+    </div>
+
+
+    <!-- CUSTOM STATUS DROPDOWN -->
+
+    <div class="custom-dropdown">
+
+      <button
+        type="button"
+        class="dropdown-trigger"
+        [class.open]="statusDropdownOpen"
+        (click)="toggleStatusDropdown($event)"
+      >
+
+        <span class="dropdown-selected">
+
+          <span
+            class="status-dot"
+            [ngClass]="selectedStatusDot"
+          ></span>
+
+          <span>
+            {{ selectedStatusLabel }}
+          </span>
+
+        </span>
+
+        <span class="dropdown-arrow">
+          {{ statusDropdownOpen ? '⌃' : '⌄' }}
+        </span>
+
+      </button>
+
+
+      @if (statusDropdownOpen) {
+
+        <div class="dropdown-menu status-menu">
+
+          <div class="dropdown-heading">
+            FILTER BY STATUS
+          </div>
+
+          @for (
+            option of statusOptions;
+            track option.value
+          ) {
+
+            <button
+              type="button"
+              class="dropdown-option"
+              [class.selected]="
+                selectedStatus === option.value
+              "
+              (click)="
+                selectStatus(
+                  option.value,
+                  $event
+                )
+              "
+            >
+
+              <span
+                class="status-dot"
+                [ngClass]="option.dot"
+              ></span>
+
+              <span>
+                {{ option.label }}
+              </span>
+
+              @if (
+                selectedStatus === option.value
+              ) {
+                <span class="option-check">
+                  ✓
+                </span>
+              }
+
+            </button>
+
+          }
+
+        </div>
+
+      }
+
+    </div>
+
+
+    @if (
+      searchText ||
+      selectedStatus
+    ) {
+
+      <button
+        type="button"
+        class="clear-button"
+        (click)="clearFilters()"
+      >
+        Clear filters
+      </button>
+
+    }
+
+  </section>
+
+
+  <!-- =====================================================
+       RESULT SUMMARY
+  ====================================================== -->
+
+  <div class="result-row">
+
+    <div class="result-count">
+      <strong>
+        {{ filteredClaims.length }}
+      </strong>
+
+      <span>
+        {{
+          filteredClaims.length === 1
+            ? 'issue'
+            : 'issues'
+        }}
+      </span>
+    </div>
+
+    @if (
+      searchText ||
+      selectedStatus
+    ) {
+
+      <span class="result-filtered">
+        Filtered results
+      </span>
+
+    } @else {
+
+      <span class="result-filtered">
+        All issues
+      </span>
+
+    }
+
+  </div>
+
+
+  <!-- =====================================================
+       LOADING
+  ====================================================== -->
+
+  @if (loading) {
+
+    <div class="state-panel">
+
+      <div class="large-spinner"></div>
+
+      <strong>
+        Loading issues
+      </strong>
+
+      <span>
+        Fetching the latest issue information...
+      </span>
+
+    </div>
+
+  }
+
+
+  <!-- =====================================================
+       EMPTY
+  ====================================================== -->
+
+  @else if (filteredClaims.length === 0) {
+
+    <div class="state-panel empty-panel">
+
+      <div class="empty-icon">
+        ◫
+      </div>
+
+      <strong>
+        No issues found
+      </strong>
+
+      <span>
+        No issues match the current search or filter.
+      </span>
+
+      @if (
+        searchText ||
+        selectedStatus
+      ) {
+
+        <button
+          type="button"
+          class="empty-clear"
+          (click)="clearFilters()"
+        >
+          Clear filters
+        </button>
+
+      }
+
+    </div>
+
+  }
+
+
+  <!-- =====================================================
+       ISSUE GRID
+  ====================================================== -->
+
+  @else {
+
+    <section class="issues-grid">
+
+      @for (
+        claim of filteredClaims;
+        track claim.id
+      ) {
+
+        <article class="issue-card">
+
+          <!-- CARD TOP -->
+
+          <div class="card-top">
+
+            <div class="issue-number">
+              ISSUE #{{ claim.id }}
+            </div>
+
+            <span
+              class="status-badge"
+              [ngClass]="
+                getStatusClass(claim.status)
+              "
+            >
+              <span class="badge-dot"></span>
+              {{ getStatusLabel(claim.status) }}
+            </span>
+
+          </div>
+
+
+          <!-- TITLE -->
+
+          <div class="card-title-area">
+
+            <h2>
+              {{ claim.title }}
+            </h2>
+
+            <p>
+              {{ claim.description }}
+            </p>
+
+          </div>
+
+
+          <!-- META -->
+
+          <div class="card-meta">
+
+            <div class="meta-block">
+
+              <span class="meta-label">
+                Raised by
+              </span>
+
+              <div class="meta-user">
+
+                <span class="user-avatar">
+                  {{ getInitial(claim.raisedByName) }}
+                </span>
+
+                <span>
+                  {{ claim.raisedByName || 'Unknown user' }}
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="meta-block">
+
+              <span class="meta-label">
+                Organization
+              </span>
+
+              <strong>
+                {{ claim.organizationName || '-' }}
+              </strong>
+
+            </div>
+
+
+            <div class="meta-block">
+
+              <span class="meta-label">
+                Assigned to
+              </span>
+
+              <strong
+                [class.unassigned]="
+                  !claim.assignedEmployeeName
+                "
+              >
+                {{
+                  claim.assignedEmployeeName ||
+                  'Not assigned'
+                }}
+              </strong>
+
+            </div>
+
+
+            <div class="meta-block">
+
+              <span class="meta-label">
+                Created
+              </span>
+
+              <strong>
+                {{ formatDate(claim.createdAt) }}
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <!-- ACTIONS -->
+
+          <div class="card-actions">
+
+            <button
+              type="button"
+              class="view-button"
+              (click)="openDetails(claim)"
+            >
+              <span>↗</span>
+              View details
+            </button>
+
+
+            @if (
+              claim.status === 'Raised'
+            ) {
+
+              <div class="assignment-dropdown">
+
+                <button
+                  type="button"
+                  class="assign-button"
+                  [disabled]="
+                    assigningClaimId === claim.id
+                  "
+                  (click)="
+                    toggleAssignmentDropdown(
+                      claim.id,
+                      $event
+                    )
+                  "
+                >
+
+                  @if (
+                    assigningClaimId === claim.id
+                  ) {
+
+                    <span class="mini-spinner"></span>
+                    Assigning...
+
+                  } @else {
+
+                    <span>＋</span>
+                    Assign
+                    <span class="button-arrow">
+                      {{
+                        assignmentDropdownClaimId === claim.id
+                          ? '⌃'
+                          : '⌄'
+                      }}
+                    </span>
+
+                  }
+
+                </button>
+
+
+                @if (
+                  assignmentDropdownClaimId === claim.id
+                ) {
+
+                  <div class="assignment-menu">
+
+                    <div class="dropdown-heading">
+                      ASSIGN ISSUE TO
+                    </div>
+
+                    @if (
+                      employees.length === 0
+                    ) {
+
+                      <div class="no-employees">
+                        No employees available.
+                      </div>
+
+                    } @else {
+
+                      @for (
+                        employee of employees;
+                        track employee.userId
+                      ) {
+
+                        <button
+                          type="button"
+                          class="employee-option"
+                          (click)="
+                            assignClaim(
+                              claim,
+                              employee,
+                              $event
+                            )
+                          "
+                        >
+
+                          <span class="employee-avatar">
+                            {{ getInitial(employee.name) }}
+                          </span>
+
+                          <span class="employee-info">
+
+                            <strong>
+                              {{ employee.name }}
+                            </strong>
+
+                            <small>
+                              {{ employee.email }}
+                            </small>
+
+                          </span>
+
+                          <span class="employee-arrow">
+                            →
+                          </span>
+
+                        </button>
+
+                      }
+
+                    }
+
+                  </div>
+
+                }
+
+              </div>
+
+            }
+
+
+            @if (
+              claim.status === 'Review'
+            ) {
+
+              <button
+                type="button"
+                class="approve-mini-button"
+                [disabled]="
+                  verifyingClaimId === claim.id
+                "
+                (click)="
+                  openVerify(
+                    claim,
+                    true,
+                    $event
+                  )
+                "
+              >
+                ✓
+              </button>
+
+              <button
+                type="button"
+                class="reject-mini-button"
+                [disabled]="
+                  verifyingClaimId === claim.id
+                "
+                (click)="
+                  openVerify(
+                    claim,
+                    false,
+                    $event
+                  )
+                "
+              >
+                ×
+              </button>
+
+            }
+
+          </div>
+
+        </article>
+
+      }
+
+    </section>
+
+  }
+
+
+  <!-- =====================================================
+       DETAILS DRAWER
+  ====================================================== -->
+
+  @if (detailsOpen) {
+
+    <div
+      class="drawer-overlay"
+      (click)="closeDetails()"
+    >
+
+      <aside
+        class="details-drawer"
+        (click)="$event.stopPropagation()"
+      >
+
+        <!-- DRAWER HEADER -->
+
+        <div class="drawer-header">
+
+          <div class="drawer-heading">
+
+            <div class="drawer-issue-id">
+              ISSUE #{{ selectedClaim?.id }}
+            </div>
+
+            <h2>
+              {{
+                selectedClaim?.title ||
+                'Issue Details'
+              }}
+            </h2>
+
+            @if (selectedClaim) {
+
+              <div class="drawer-status-line">
+
+                <span
+                  class="status-badge"
+                  [ngClass]="
+                    getStatusClass(
+                      selectedClaim.status
+                    )
+                  "
+                >
+                  <span class="badge-dot"></span>
+                  {{
+                    getStatusLabel(
+                      selectedClaim.status
+                    )
+                  }}
+                </span>
+
+                <span>
+                  Updated
+                  {{
+                    formatDate(
+                      selectedClaim.updatedAt
+                    )
+                  }}
+                </span>
+
+              </div>
+
+            }
+
+          </div>
+
+          <button
+            type="button"
+            class="drawer-close"
+            (click)="closeDetails()"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <!-- DRAWER LOADING -->
+
+        @if (detailsLoading) {
+
+          <div class="drawer-loading">
+
+            <div class="large-spinner"></div>
+
+            <strong>
+              Loading issue
+            </strong>
+
+            <span>
+              Fetching complete issue details...
+            </span>
+
+          </div>
+
+        }
+
+
+        @if (
+          !detailsLoading &&
+          selectedClaim
+        ) {
+
+          <div class="drawer-content">
+
+            <!-- DESCRIPTION -->
+
+            <section class="drawer-section">
+
+              <div class="section-title">
+                <span class="section-icon">
+                  ≡
+                </span>
+
+                Description
+              </div>
+
+              <div class="description-card">
+                {{
+                  selectedClaim.description ||
+                  'No description available.'
+                }}
+              </div>
+
+            </section>
+
+
+            <!-- INFORMATION -->
+
+            <section class="drawer-section">
+
+              <div class="section-title">
+                <span class="section-icon">
+                  i
+                </span>
+
+                Issue information
+              </div>
+
+              <div class="info-grid">
+
+                <div class="info-item">
+
+                  <span>
+                    Raised by
+                  </span>
+
+                  <strong>
+                    {{ selectedClaim.raisedByName || '-' }}
+                  </strong>
+
+                  <small>
+                    {{ selectedClaim.raisedByEmail || '-' }}
+                  </small>
+
+                </div>
+
+
+                <div class="info-item">
+
+                  <span>
+                    Organization
+                  </span>
+
+                  <strong>
+                    {{
+                      selectedClaim.organizationName ||
+                      '-'
+                    }}
+                  </strong>
+
+                  <small>
+                    {{
+                      selectedClaim.organizationLocation ||
+                      '-'
+                    }}
+                  </small>
+
+                </div>
+
+
+                <div class="info-item">
+
+                  <span>
+                    Manager
+                  </span>
+
+                  <strong>
+                    {{
+                      selectedClaim.managerName ||
+                      '-'
+                    }}
+                  </strong>
+
+                  <small>
+                    {{
+                      selectedClaim.managerEmail ||
+                      '-'
+                    }}
+                  </small>
+
+                </div>
+
+
+                <div class="info-item">
+
+                  <span>
+                    Assigned employee
+                  </span>
+
+                  <strong>
+                    {{
+                      selectedClaim.assignedEmployeeName ||
+                      'Not assigned'
+                    }}
+                  </strong>
+
+                  <small>
+                    {{
+                      selectedClaim.assignedEmployeeEmail ||
+                      '-'
+                    }}
+                  </small>
+
+                </div>
+
+              </div>
+
+            </section>
+
+
+            <!-- TIMELINE -->
+
+            <section class="drawer-section">
+
+              <div class="section-title">
+                <span class="section-icon">
+                  ◷
+                </span>
+
+                Timeline
+              </div>
+
+              <div class="timeline">
+
+                <div class="timeline-item">
+
+                  <span class="timeline-dot created"></span>
+
+                  <div>
+                    <strong>Created</strong>
+                    <span>
+                      {{
+                        formatDate(
+                          selectedClaim.createdAt
+                        )
+                      }}
+                    </span>
+                  </div>
+
+                </div>
+
+
+                <div class="timeline-item">
+
+                  <span class="timeline-dot assigned"></span>
+
+                  <div>
+                    <strong>Assigned</strong>
+                    <span>
+                      {{
+                        formatDate(
+                          selectedClaim.assignedAt
+                        )
+                      }}
+                    </span>
+                  </div>
+
+                </div>
+
+
+                <div class="timeline-item">
+
+                  <span class="timeline-dot resolved"></span>
+
+                  <div>
+                    <strong>Resolved</strong>
+                    <span>
+                      {{
+                        formatDate(
+                          selectedClaim.resolvedAt
+                        )
+                      }}
+                    </span>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </section>
+
+
+            <!-- ATTACHMENTS -->
+
+            <section class="drawer-section">
+
+              <div class="section-title attachments-title">
+
+                <span class="section-title-left">
+
+                  <span class="section-icon">
+                    ◉
+                  </span>
+
+                  Attachments
+
+                </span>
+
+                <span class="attachment-count">
+                  {{
+                    selectedClaim.attachments?.length || 0
+                  }}
+                </span>
+
+              </div>
+
+
+              @if (
+                !selectedClaim.attachments ||
+                selectedClaim.attachments.length === 0
+              ) {
+
+                <div class="no-attachments">
+                  <div class="no-attachment-icon">
+                    ◌
+                  </div>
+
+                  <strong>
+                    No attachments
+                  </strong>
+
+                  <span>
+                    This issue has no uploaded files.
+                  </span>
+                </div>
+
+              } @else {
+
+                <div class="attachment-grid">
+
+                  @for (
+                    attachment of selectedClaim.attachments;
+                    track attachment.id
+                  ) {
+
+                    <div class="attachment-card">
+
+                      <!-- MEDIA HEADER -->
+
+                      <div class="attachment-top">
+
+                        <div class="attachment-type">
+
+                          <span
+                            class="attachment-type-icon"
+                            [class.image-type]="
+                              isImage(
+                                attachment.contentType
+                              )
+                            "
+                            [class.video-type]="
+                              isVideo(
+                                attachment.contentType
+                              )
+                            "
+                          >
+
+                            @if (
+                              isImage(
+                                attachment.contentType
+                              )
+                            ) {
+                              ◉
+                            } @else if (
+                              isVideo(
+                                attachment.contentType
+                              )
+                            ) {
+                              ▶
+                            } @else {
+                              ▣
+                            }
+
+                          </span>
+
+                          <div>
+
+                            <strong>
+                              {{ attachment.fileName }}
+                            </strong>
+
+                            <small>
+                              {{
+                                getAttachmentType(
+                                  attachment.contentType
+                                )
+                              }}
+                            </small>
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+
+                      <!-- LOADING -->
+
+                      @if (
+                        attachmentLoading[
+                          attachment.id
+                        ]
+                      ) {
+
+                        <div class="attachment-loading">
+
+                          <div class="media-spinner"></div>
+
+                          <span>
+                            Loading media...
+                          </span>
+
+                        </div>
+
+                      }
+
+
+                      <!-- IMAGE -->
+
+                      @if (
+                        isImage(
+                          attachment.contentType
+                        ) &&
+                        getAttachmentUrl(
+                          attachment.id
+                        )
+                      ) {
+
+                        <div class="image-preview">
+
+                          <img
+                            [src]="
+                              getAttachmentUrl(
+                                attachment.id
+                              )
+                            "
+                            [alt]="
+                              attachment.fileName
+                            "
+                          />
+
+                        </div>
+
+                      }
+
+
+                      <!-- VIDEO -->
+
+                      @if (
+                        isVideo(
+                          attachment.contentType
+                        ) &&
+                        getAttachmentUrl(
+                          attachment.id
+                        )
+                      ) {
+
+                        <div class="video-preview">
+
+                          <video
+                            controls
+                            preload="metadata"
+                            playsinline
+                            [src]="
+                              getAttachmentUrl(
+                                attachment.id
+                              )
+                            "
+                          >
+                          </video>
+
+                        </div>
+
+                      }
+
+
+                      <!-- OTHER FILE -->
+
+                      @if (
+                        isOtherFile(
+                          attachment.contentType
+                        ) &&
+                        getAttachmentUrl(
+                          attachment.id
+                        )
+                      ) {
+
+                        <a
+                          class="file-preview"
+                          [href]="
+                            getAttachmentUrl(
+                              attachment.id
+                            )
+                          "
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+
+                          <span>
+                            ▣
+                          </span>
+
+                          <strong>
+                            Open file
+                          </strong>
+
+                        </a>
+
+                      }
+
+                    </div>
+
+                  }
+
+                </div>
+
+              }
+
+            </section>
+
+
+            <!-- RESOLUTION -->
+
+            @if (
+              selectedClaim.resolutionComment
+            ) {
+
+              <section class="drawer-section">
+
+                <div class="section-title">
+                  <span class="section-icon">
+                    ✓
+                  </span>
+
+                  Resolution
+                </div>
+
+                <div class="resolution-card">
+                  {{
+                    selectedClaim.resolutionComment
+                  }}
+                </div>
+
+              </section>
+
+            }
+
+
+            <!-- HISTORY -->
+
+            <section class="drawer-section">
+
+              <div class="section-title">
+                <span class="section-icon">
+                  ↻
+                </span>
+
+                Activity history
+              </div>
+
+
+              @if (
+                !selectedClaim.history ||
+                selectedClaim.history.length === 0
+              ) {
+
+                <div class="no-history">
+                  No activity history available.
+                </div>
+
+              } @else {
+
+                <div class="history-list">
+
+                  @for (
+                    history of selectedClaim.history;
+                    track history.id
+                  ) {
+
+                    <div class="history-item">
+
+                      <div class="history-marker">
+                        <span></span>
+                      </div>
+
+                      <div class="history-content">
+
+                        <div class="history-main">
+
+                          <strong>
+                            {{ history.action }}
+                          </strong>
+
+                          <span>
+                            {{
+                              formatDate(
+                                history.createdAt
+                              )
+                            }}
+                          </span>
+
+                        </div>
+
+                        <div class="history-user">
+                          {{ history.performedByName }}
+                        </div>
+
+                        @if (
+                          history.fromStatus ||
+                          history.toStatus
+                        ) {
+
+                          <div class="history-transition">
+
+                            {{
+                              history.fromStatus || '-'
+                            }}
+
+                            <span>→</span>
+
+                            {{
+                              history.toStatus || '-'
+                            }}
+
+                          </div>
+
+                        }
+
+                        @if (history.comment) {
+
+                          <p>
+                            {{ history.comment }}
+                          </p>
+
+                        }
+
+                      </div>
+
+                    </div>
+
+                  }
+
+                </div>
+
+              }
+
+            </section>
+
+          </div>
+
+
+          <!-- DRAWER ACTIONS -->
+
+          <div class="drawer-footer">
+
+            @if (
+              selectedClaim.status === 'Raised'
+            ) {
+
+              <div class="drawer-assignment assignment-dropdown">
+
+                <button
+                  type="button"
+                  class="drawer-primary-action"
+                  [disabled]="
+                    assigningClaimId ===
+                    selectedClaim.id
+                  "
+                  (click)="
+                    toggleAssignmentDropdown(
+                      selectedClaim.id,
+                      $event
+                    )
+                  "
+                >
+
+                  @if (
+                    assigningClaimId ===
+                    selectedClaim.id
+                  ) {
+
+                    <span class="mini-spinner"></span>
+                    Assigning...
+
+                  } @else {
+
+                    Assign employee
+
+                    <span>
+                      {{
+                        assignmentDropdownClaimId ===
+                        selectedClaim.id
+                          ? '⌃'
+                          : '⌄'
+                      }}
+                    </span>
+
+                  }
+
+                </button>
+
+
+                @if (
+                  assignmentDropdownClaimId ===
+                  selectedClaim.id
+                ) {
+
+                  <div class="assignment-menu drawer-menu">
+
+                    <div class="dropdown-heading">
+                      ASSIGN ISSUE TO
+                    </div>
+
+                    @for (
+                      employee of employees;
+                      track employee.userId
+                    ) {
+
+                      <button
+                        type="button"
+                        class="employee-option"
+                        (click)="
+                          assignClaim(
+                            selectedClaim,
+                            employee,
+                            $event
+                          )
+                        "
+                      >
+
+                        <span class="employee-avatar">
+                          {{ getInitial(employee.name) }}
+                        </span>
+
+                        <span class="employee-info">
+
+                          <strong>
+                            {{ employee.name }}
+                          </strong>
+
+                          <small>
+                            {{ employee.email }}
+                          </small>
+
+                        </span>
+
+                        <span class="employee-arrow">
+                          →
+                        </span>
+
+                      </button>
+
+                    }
+
+                  </div>
+
+                }
+
+              </div>
+
+            }
+
+
+            @if (
+              selectedClaim.status === 'Review'
+            ) {
+
+              <button
+                type="button"
+                class="drawer-approve"
+                (click)="
+                  openVerify(
+                    selectedClaim,
+                    true,
+                    $event
+                  )
+                "
+              >
+                ✓ Approve
+              </button>
+
+              <button
+                type="button"
+                class="drawer-reject"
+                (click)="
+                  openVerify(
+                    selectedClaim,
+                    false,
+                    $event
+                  )
+                "
+              >
+                × Reject
+              </button>
+
+            }
+
+          </div>
+
+        }
+
+      </aside>
+
+    </div>
+
+  }
+
+
+  <!-- =====================================================
+       VERIFY MODAL
+  ====================================================== -->
+
+  @if (
+    verifyModalOpen &&
+    verifyClaim
+  ) {
+
+    <div
+      class="modal-overlay"
+      (click)="closeVerify()"
+    >
+
+      <div
+        class="verify-modal"
+        (click)="$event.stopPropagation()"
+      >
+
+        <div class="modal-header">
+
+          <div>
+
+            <span class="modal-eyebrow">
+              ISSUE #{{ verifyClaim.id }}
+            </span>
+
+            <h2>
+              {{
+                verifyApproved
+                  ? 'Approve issue'
+                  : 'Reject issue'
+              }}
+            </h2>
+
+          </div>
+
+          <button
+            type="button"
+            class="modal-close"
+            (click)="closeVerify()"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <div class="modal-body">
+
+          <div
+            class="decision-banner"
+            [class.approve-banner]="verifyApproved"
+            [class.reject-banner]="!verifyApproved"
+          >
+
+            <span>
+              {{
+                verifyApproved
+                  ? '✓'
+                  : '!'
+              }}
+            </span>
+
+            <div>
+
+              <strong>
+                {{
+                  verifyApproved
+                    ? 'Confirm completion'
+                    : 'Return issue to In Progress'
+                }}
+              </strong>
+
+              <p>
+
+                @if (verifyApproved) {
+                  Confirm that this issue has been successfully completed.
+                } @else {
+                  Add a reason explaining why this issue is being rejected.
+                }
+
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="form-field">
+
+            <label>
+
+              {{
+                verifyApproved
+                  ? 'Comment'
+                  : 'Rejection comment'
+              }}
+
+            </label>
+
+            <textarea
+              [(ngModel)]="verifyComment"
+              rows="5"
+              [placeholder]="
+                verifyApproved
+                  ? 'Add an optional comment...'
+                  : 'Explain why the issue is rejected...'
+              "
+            ></textarea>
+
+          </div>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+          <button
+            type="button"
+            class="secondary-button"
+            (click)="closeVerify()"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            [class]="
+              verifyApproved
+                ? 'confirm-approve-button'
+                : 'confirm-reject-button'
+            "
+            [disabled]="
+              verifyingClaimId === verifyClaim.id
+            "
+            (click)="verifySelectedClaim()"
+          >
+
+            @if (
+              verifyingClaimId === verifyClaim.id
+            ) {
+
+              <span class="mini-spinner"></span>
+              Processing...
+
+            } @else {
+
+              {{
+                verifyApproved
+                  ? 'Approve issue'
+                  : 'Reject issue'
+              }}
+
+            }
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  }
+
+
+  <!-- =====================================================
+       CREATE ISSUE MODAL
+  ====================================================== -->
+
+  @if (createModalOpen) {
+
+    <div
+      class="modal-overlay"
+      (click)="closeCreateModal()"
+    >
+
+      <div
+        class="create-modal"
+        (click)="$event.stopPropagation()"
+      >
+
+        <div class="modal-header">
+
+          <div>
+
+            <span class="modal-eyebrow">
+              OPSFLOW
+            </span>
+
+            <h2>
+              Create new issue
+            </h2>
+
+          </div>
+
+          <button
+            type="button"
+            class="modal-close"
+            [disabled]="creatingClaim"
+            (click)="closeCreateModal()"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <div class="modal-body">
+
+          <!-- TITLE -->
+
+          <div class="form-field">
+
+            <label>
+              Issue title
+              <span>*</span>
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="newClaimTitle"
+              placeholder="e.g. Production server unavailable"
+              maxlength="200"
+            />
+
+          </div>
+
+
+          <!-- DESCRIPTION -->
+
+          <div class="form-field">
+
+            <label>
+              Description
+              <span>*</span>
+            </label>
+
+            <textarea
+              [(ngModel)]="newClaimDescription"
+              rows="5"
+              placeholder="Describe what happened and provide any useful context..."
+            ></textarea>
+
+          </div>
+
+
+          <!-- MEDIA -->
+
+          <div class="upload-grid">
+
+            <!-- PHOTO -->
+
+            <label class="upload-card">
+
+              <input
+                type="file"
+                accept="image/*"
+                (change)="onPhotoSelected($event)"
+              />
+
+              <span class="upload-icon">
+                ◉
+              </span>
+
+              <strong>
+                {{ selectedPhoto ? selectedPhoto.name : 'Add photo' }}
+              </strong>
+
+              <small>
+                PNG, JPG, WEBP
+              </small>
+
+              @if (selectedPhoto) {
+                <span class="selected-file">
+                  Selected
+                </span>
+              }
+
+            </label>
+
+
+            <!-- VIDEO -->
+
+            <label class="upload-card">
+
+              <input
+                type="file"
+                accept="video/*"
+                (change)="onVideoSelected($event)"
+              />
+
+              <span class="upload-icon video-upload">
+                ▶
+              </span>
+
+              <strong>
+                {{ selectedVideo ? selectedVideo.name : 'Add video' }}
+              </strong>
+
+              <small>
+                MP4, WEBM, MOV
+              </small>
+
+              @if (selectedVideo) {
+                <span class="selected-file">
+                  Selected
+                </span>
+              }
+
+            </label>
+
+          </div>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+          <button
+            type="button"
+            class="secondary-button"
+            [disabled]="creatingClaim"
+            (click)="closeCreateModal()"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            class="create-confirm-button"
+            [disabled]="creatingClaim"
+            (click)="createIssue()"
+          >
+
+            @if (creatingClaim) {
+
+              <span class="mini-spinner"></span>
+              Creating...
+
+            } @else {
+
+              <span>+</span>
+              Create issue
+
+            }
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

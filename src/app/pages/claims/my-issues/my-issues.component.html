@@ -1,0 +1,1520 @@
+<div class="my-issues-page">
+
+  <!-- =====================================================
+       HEADER
+  ====================================================== -->
+
+  <section class="page-hero">
+
+    <div class="hero-copy">
+
+      <div class="hero-eyebrow">
+        <span class="eyebrow-dot"></span>
+        Issue Management
+      </div>
+
+      <h1>My Issues</h1>
+
+      <p>
+        Track, review and manage every issue you have raised.
+      </p>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="create-button"
+      (click)="openCreate()">
+
+      <span class="create-icon">+</span>
+
+      <span>Raise an Issue</span>
+
+    </button>
+
+  </section>
+
+
+  <!-- =====================================================
+       ALERT
+  ====================================================== -->
+
+  @if (errorMessage) {
+
+    <div class="alert error-alert">
+
+      <div class="alert-icon">!</div>
+
+      <div class="alert-content">
+
+        <strong>Something went wrong</strong>
+
+        <span>
+          {{ errorMessage }}
+        </span>
+
+      </div>
+
+      <button
+        type="button"
+        class="alert-close"
+        (click)="errorMessage = ''; refreshView()">
+
+        ×
+
+      </button>
+
+    </div>
+
+  }
+
+
+  @if (successMessage) {
+
+    <div class="alert success-alert">
+
+      <div class="alert-icon">✓</div>
+
+      <div class="alert-content">
+
+        <strong>Success</strong>
+
+        <span>
+          {{ successMessage }}
+        </span>
+
+      </div>
+
+      <button
+        type="button"
+        class="alert-close"
+        (click)="successMessage = ''; refreshView()">
+
+        ×
+
+      </button>
+
+    </div>
+
+  }
+
+
+  <!-- =====================================================
+       TOOLBAR
+  ====================================================== -->
+
+  <section class="issues-toolbar">
+
+    <div class="toolbar-left">
+
+      <div class="result-count">
+
+        <strong>
+          {{ filteredClaims.length }}
+        </strong>
+
+        <span>
+          {{
+            filteredClaims.length === 1
+              ? 'issue'
+              : 'issues'
+          }}
+        </span>
+
+      </div>
+
+      <div class="toolbar-divider"></div>
+
+      <span class="toolbar-description">
+        {{
+          searchText || selectedStatus
+            ? 'Filtered issues'
+            : 'All issues raised by you'
+        }}
+      </span>
+
+    </div>
+
+
+    <div class="toolbar-right">
+
+      <div class="search-box">
+
+        <span class="search-icon">⌕</span>
+
+        <input
+          type="text"
+          [(ngModel)]="searchText"
+          (input)="applyFilters()"
+          placeholder="Search issues..."
+        />
+
+        @if (searchText) {
+
+          <button
+            type="button"
+            class="clear-search"
+            (click)="clearSearch()">
+
+            ×
+
+          </button>
+
+        }
+
+      </div>
+
+
+      <div class="status-filter">
+
+        <button
+          type="button"
+          class="filter-button"
+          [class.active]="statusDropdownOpen"
+          (click)="toggleStatusDropdown($event)">
+
+          <span class="filter-icon">≡</span>
+
+          <span>
+            {{ selectedStatus || 'All statuses' }}
+          </span>
+
+          <span class="filter-chevron">
+            {{ statusDropdownOpen ? '⌃' : '⌄' }}
+          </span>
+
+        </button>
+
+
+        @if (statusDropdownOpen) {
+
+          <div
+            class="status-dropdown"
+            (click)="$event.stopPropagation()">
+
+            <div class="dropdown-heading">
+              Filter by status
+            </div>
+
+
+            <button
+              type="button"
+              class="status-option"
+              [class.selected]="selectedStatus === ''"
+              (click)="selectStatus('')">
+
+              <span class="option-check">
+                @if (selectedStatus === '') {
+                  ✓
+                }
+              </span>
+
+              All statuses
+
+            </button>
+
+
+            <button
+              type="button"
+              class="status-option"
+              [class.selected]="selectedStatus === 'Raised'"
+              (click)="selectStatus('Raised')">
+
+              <span class="option-check">
+                @if (selectedStatus === 'Raised') {
+                  ✓
+                }
+              </span>
+
+              <span class="status-dot raised-dot"></span>
+
+              Raised
+
+            </button>
+
+
+            <button
+              type="button"
+              class="status-option"
+              [class.selected]="selectedStatus === 'InProgress'"
+              (click)="selectStatus('InProgress')">
+
+              <span class="option-check">
+                @if (selectedStatus === 'InProgress') {
+                  ✓
+                }
+              </span>
+
+              <span class="status-dot progress-dot"></span>
+
+              In Progress
+
+            </button>
+
+
+            <button
+              type="button"
+              class="status-option"
+              [class.selected]="selectedStatus === 'Review'"
+              (click)="selectStatus('Review')">
+
+              <span class="option-check">
+                @if (selectedStatus === 'Review') {
+                  ✓
+                }
+              </span>
+
+              <span class="status-dot review-dot"></span>
+
+              Review
+
+            </button>
+
+
+            <button
+              type="button"
+              class="status-option"
+              [class.selected]="selectedStatus === 'Closed'"
+              (click)="selectStatus('Closed')">
+
+              <span class="option-check">
+                @if (selectedStatus === 'Closed') {
+                  ✓
+                }
+              </span>
+
+              <span class="status-dot closed-dot"></span>
+
+              Closed
+
+            </button>
+
+          </div>
+
+        }
+
+      </div>
+
+
+      @if (
+        searchText ||
+        selectedStatus
+      ) {
+
+        <button
+          type="button"
+          class="clear-filter-button"
+          (click)="clearFilters()">
+
+          Clear
+
+        </button>
+
+      }
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       LOADING
+  ====================================================== -->
+
+  @if (loading) {
+
+    <section class="state-card">
+
+      <div class="loading-spinner"></div>
+
+      <strong>Loading your issues</strong>
+
+      <span>
+        Fetching the latest issue information...
+      </span>
+
+    </section>
+
+  }
+
+
+  <!-- =====================================================
+       EMPTY
+  ====================================================== -->
+
+  @else if (filteredClaims.length === 0) {
+
+    <section class="empty-state">
+
+      <div class="empty-illustration">
+        <div class="empty-folder">⌁</div>
+      </div>
+
+
+      @if (claims.length === 0) {
+
+        <h2>No issues yet</h2>
+
+        <p>
+          You haven't raised any issue yet.
+          Create your first issue to get started.
+        </p>
+
+        <button
+          type="button"
+          class="create-button empty-create"
+          (click)="openCreate()">
+
+          <span class="create-icon">+</span>
+
+          <span>Raise Your First Issue</span>
+
+        </button>
+
+      } @else {
+
+        <h2>No matching issues</h2>
+
+        <p>
+          No issue matches your current search or status filter.
+        </p>
+
+        <button
+          type="button"
+          class="secondary-button"
+          (click)="clearFilters()">
+
+          Clear Filters
+
+        </button>
+
+      }
+
+    </section>
+
+  }
+
+
+  <!-- =====================================================
+       ISSUE CONTAINERS
+  ====================================================== -->
+
+  @else {
+
+    <section class="issues-grid">
+
+      @for (
+        claim of filteredClaims;
+        track claim.id
+      ) {
+
+        <article
+          class="issue-card"
+          [class.selected-card]="
+            selectedClaim?.id === claim.id &&
+            detailsOpen
+          ">
+
+
+          <!-- CARD ACCENT -->
+
+          <div
+            class="card-accent"
+            [ngClass]="getStatusClass(claim.status)">
+          </div>
+
+
+          <!-- CARD HEADER -->
+
+          <div class="card-top">
+
+            <div class="issue-reference">
+
+              <span class="reference-icon">
+                #
+              </span>
+
+              <div>
+
+                <small>Issue</small>
+
+                <strong>
+                  {{ claim.id }}
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <span
+              class="status-pill"
+              [ngClass]="getStatusClass(claim.status)">
+
+              <span class="status-dot"></span>
+
+              {{ getStatusLabel(claim.status) }}
+
+            </span>
+
+          </div>
+
+
+          <!-- ISSUE CONTENT -->
+
+          <div class="issue-main">
+
+            <div class="issue-title-row">
+
+              <div class="title-marker"></div>
+
+              <h2 [title]="claim.title">
+                {{ claim.title }}
+              </h2>
+
+            </div>
+
+            <p>
+              {{ claim.description }}
+            </p>
+
+          </div>
+
+
+          <!-- META -->
+
+          <div class="issue-meta">
+
+            <div class="meta-item">
+
+              <div class="meta-icon">
+                ◷
+              </div>
+
+              <div>
+
+                <small>Created</small>
+
+                <strong>
+                  {{
+                    claim.createdAt
+                      | date:'dd MMM yyyy'
+                  }}
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <div class="meta-item">
+
+              <div class="meta-icon">
+                ◆
+              </div>
+
+              <div>
+
+                <small>Assigned to</small>
+
+                <strong>
+                  {{
+                    claim.assignedEmployeeName
+                      || 'Not assigned'
+                  }}
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- ATTACHMENT -->
+
+          @if (
+            claim.attachments &&
+            claim.attachments.length > 0
+          ) {
+
+            <div class="attachment-summary">
+
+              <div class="attachment-summary-icon">
+                ↗
+              </div>
+
+              <div>
+
+                <strong>
+                  {{
+                    claim.attachments.length
+                  }}
+                  {{
+                    claim.attachments.length === 1
+                      ? 'Attachment'
+                      : 'Attachments'
+                  }}
+                </strong>
+
+                <span>
+                  Available in issue details
+                </span>
+
+              </div>
+
+            </div>
+
+          }
+
+
+          <!-- FOOTER -->
+
+          <div class="card-footer">
+
+            <button
+              type="button"
+              class="view-button"
+              (click)="openDetails(claim)">
+
+              <span class="view-icon">↗</span>
+
+              <span>View Details</span>
+
+              <span class="view-arrow">→</span>
+
+            </button>
+
+          </div>
+
+        </article>
+
+      }
+
+    </section>
+
+  }
+
+
+  <!-- =====================================================
+       DETAILS
+  ====================================================== -->
+
+  @if (detailsOpen) {
+
+    <div
+      class="details-backdrop"
+      (click)="closeDetails()">
+    </div>
+
+
+    <aside
+      class="details-drawer"
+      (click)="$event.stopPropagation()">
+
+
+      <!-- DRAWER HEADER -->
+
+      <div class="drawer-header">
+
+        <div class="drawer-title">
+
+          <div class="drawer-reference">
+            ISSUE #{{ selectedClaim?.id }}
+          </div>
+
+          <h2>
+            {{ selectedClaim?.title || 'Issue Details' }}
+          </h2>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="drawer-close"
+          (click)="closeDetails()">
+
+          ×
+
+        </button>
+
+      </div>
+
+
+      <!-- DRAWER BODY -->
+
+      <div class="drawer-body">
+
+        @if (detailsLoading) {
+
+          <div class="drawer-loading">
+
+            <div class="loading-spinner"></div>
+
+            <strong>
+              Loading issue details
+            </strong>
+
+            <span>
+              Fetching the latest issue information...
+            </span>
+
+          </div>
+
+        }
+
+
+        @else if (selectedClaim) {
+
+          <!-- STATUS -->
+
+          <section class="drawer-section status-section">
+
+            <div>
+
+              <div class="section-mini-label">
+                CURRENT STATUS
+              </div>
+
+              <span
+                class="large-status-pill"
+                [ngClass]="
+                  getStatusClass(
+                    selectedClaim.status
+                  )
+                ">
+
+                <span class="status-dot"></span>
+
+                {{
+                  getStatusLabel(
+                    selectedClaim.status
+                  )
+                }}
+
+              </span>
+
+            </div>
+
+
+            <div class="detail-live-indicator">
+
+              <span></span>
+
+              Live details
+
+            </div>
+
+          </section>
+
+
+          <!-- INFORMATION -->
+
+          <section class="drawer-section">
+
+            <div class="section-heading">
+
+              <div class="section-heading-icon">
+                i
+              </div>
+
+              <div>
+
+                <h3>Issue Information</h3>
+
+                <span>
+                  Complete issue information
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="detail-grid">
+
+              <div class="detail-box full">
+
+                <span>Title</span>
+
+                <strong>
+                  {{ selectedClaim.title }}
+                </strong>
+
+              </div>
+
+
+              <div class="detail-box full">
+
+                <span>Description</span>
+
+                <p>
+                  {{ selectedClaim.description }}
+                </p>
+
+              </div>
+
+
+              <div class="detail-box">
+
+                <span>Issue ID</span>
+
+                <strong>
+                  #{{ selectedClaim.id }}
+                </strong>
+
+              </div>
+
+
+              <div class="detail-box">
+
+                <span>Created</span>
+
+                <strong>
+                  {{
+                    selectedClaim.createdAt
+                      | date:'dd MMM yyyy, hh:mm a'
+                  }}
+                </strong>
+
+              </div>
+
+
+              <div class="detail-box">
+
+                <span>Assigned Employee</span>
+
+                <strong>
+                  {{
+                    selectedClaim.assignedEmployeeName
+                      || 'Not assigned'
+                  }}
+                </strong>
+
+              </div>
+
+
+              <div class="detail-box">
+
+                <span>Assigned At</span>
+
+                <strong>
+                  {{
+                    selectedClaim.assignedAt
+                      ? (
+                          selectedClaim.assignedAt
+                            | date:'dd MMM yyyy, hh:mm a'
+                        )
+                      : 'Not assigned'
+                  }}
+                </strong>
+
+              </div>
+
+
+              <div class="detail-box">
+
+                <span>Last Updated</span>
+
+                <strong>
+                  {{
+                    selectedClaim.updatedAt
+                      ? (
+                          selectedClaim.updatedAt
+                            | date:'dd MMM yyyy, hh:mm a'
+                        )
+                      : '—'
+                  }}
+                </strong>
+
+              </div>
+
+
+              @if (
+                selectedClaim.resolutionComment
+              ) {
+
+                <div
+                  class="detail-box full resolution-box">
+
+                  <span>Resolution</span>
+
+                  <p>
+                    {{
+                      selectedClaim.resolutionComment
+                    }}
+                  </p>
+
+                </div>
+
+              }
+
+            </div>
+
+          </section>
+
+
+          <!-- =================================================
+               ATTACHMENTS
+          ================================================== -->
+
+          <section class="drawer-section">
+
+            <div class="section-heading">
+
+              <div class="section-heading-icon">
+                ↗
+              </div>
+
+              <div>
+
+                <h3>Attachments</h3>
+
+                <span>
+                  {{
+                    selectedClaim.attachments?.length || 0
+                  }}
+                  {{
+                    (selectedClaim.attachments?.length || 0) === 1
+                      ? 'file attached'
+                      : 'files attached'
+                  }}
+                </span>
+
+              </div>
+
+            </div>
+
+
+            @if (
+              selectedClaim.attachments &&
+              selectedClaim.attachments.length > 0
+            ) {
+
+              <div class="attachments-list">
+
+                @for (
+                  attachment of selectedClaim.attachments;
+                  track attachment.id
+                ) {
+
+                  <div class="attachment-card">
+
+
+                    <!-- IMAGE -->
+
+                    @if (
+                      isImage(
+                        attachment.contentType
+                      )
+                    ) {
+
+                      @if (
+                        getAttachmentUrl(
+                          attachment.id
+                        )
+                      ) {
+
+                        <div class="attachment-preview image-preview">
+
+                          <img
+                            [src]="
+                              getAttachmentUrl(
+                                attachment.id
+                              )
+                            "
+                            [alt]="
+                              attachment.fileName
+                            "
+                          />
+
+                        </div>
+
+                      } @else {
+
+                        <div
+                          class="attachment-preview loading-preview">
+
+                          <div class="mini-spinner"></div>
+
+                          <span>
+                            {{
+                              isAttachmentLoading(
+                                attachment.id
+                              )
+                                ? 'Loading image...'
+                                : 'Preview unavailable'
+                            }}
+                          </span>
+
+                        </div>
+
+                      }
+
+                    }
+
+
+                    <!-- VIDEO -->
+
+                    @else if (
+                      isVideo(
+                        attachment.contentType
+                      )
+                    ) {
+
+                      @if (
+                        getAttachmentUrl(
+                          attachment.id
+                        )
+                      ) {
+
+                        <div class="attachment-preview video-preview">
+
+                          <video
+                            controls
+                            preload="metadata"
+                            [src]="
+                              getAttachmentUrl(
+                                attachment.id
+                              )
+                            ">
+                          </video>
+
+                        </div>
+
+                      } @else {
+
+                        <div
+                          class="attachment-preview loading-preview">
+
+                          <div class="mini-spinner"></div>
+
+                          <span>
+                            {{
+                              isAttachmentLoading(
+                                attachment.id
+                              )
+                                ? 'Loading video...'
+                                : 'Preview unavailable'
+                            }}
+                          </span>
+
+                        </div>
+
+                      }
+
+                    }
+
+
+                    <!-- OTHER FILE -->
+
+                    @else {
+
+                      <div class="file-preview">
+
+                        <div class="file-type-icon">
+                          📄
+                        </div>
+
+                        <div class="file-info">
+
+                          <strong>
+                            {{ attachment.fileName }}
+                          </strong>
+
+                          <span>
+                            {{ attachment.contentType }}
+                          </span>
+
+                        </div>
+
+                      </div>
+
+                    }
+
+
+                    <!-- ATTACHMENT FOOTER -->
+
+                    <div class="attachment-footer">
+
+                      <div class="attachment-name">
+
+                        <strong
+                          [title]="
+                            attachment.fileName
+                          ">
+
+                          {{ attachment.fileName }}
+
+                        </strong>
+
+                        <span>
+                          {{
+                            attachment.createdAt
+                              | date:'dd MMM yyyy'
+                          }}
+                        </span>
+
+                      </div>
+
+
+                      @if (
+                        getAttachmentUrl(
+                          attachment.id
+                        )
+                      ) {
+
+                        <a
+                          class="open-attachment"
+                          [href]="
+                            getAttachmentUrl(
+                              attachment.id
+                            )
+                          "
+                          target="_blank"
+                          rel="noopener">
+
+                          Open
+
+                        </a>
+
+                      }
+
+                    </div>
+
+                  </div>
+
+                }
+
+              </div>
+
+            } @else {
+
+              <div class="no-attachments">
+
+                <div class="no-attachment-icon">
+                  ⌁
+                </div>
+
+                <strong>
+                  No attachments
+                </strong>
+
+                <span>
+                  No files were added to this issue.
+                </span>
+
+              </div>
+
+            }
+
+          </section>
+
+
+          <!-- =================================================
+               HISTORY
+          ================================================== -->
+
+          <section class="drawer-section">
+
+            <div class="section-heading">
+
+              <div class="section-heading-icon">
+                ◷
+              </div>
+
+              <div>
+
+                <h3>Activity</h3>
+
+                <span>
+                  Issue history and status changes
+                </span>
+
+              </div>
+
+            </div>
+
+
+            @if (
+              selectedClaim.history &&
+              selectedClaim.history.length > 0
+            ) {
+
+              <div class="timeline">
+
+                @for (
+                  item of selectedClaim.history;
+                  track item.id
+                ) {
+
+                  <div class="timeline-item">
+
+                    <div class="timeline-marker"></div>
+
+                    <div class="timeline-content">
+
+                      <div class="timeline-top">
+
+                        <strong>
+                          {{ item.action }}
+                        </strong>
+
+                        <span>
+                          {{
+                            item.createdAt
+                              | date:'dd MMM yyyy, hh:mm a'
+                          }}
+                        </span>
+
+                      </div>
+
+
+                      @if (
+                        item.fromStatus ||
+                        item.toStatus
+                      ) {
+
+                        <div class="status-transition">
+
+                          @if (
+                            item.fromStatus
+                          ) {
+
+                            <span>
+                              {{
+                                getStatusLabel(
+                                  item.fromStatus
+                                )
+                              }}
+                            </span>
+
+                            <b>→</b>
+
+                          }
+
+                          @if (
+                            item.toStatus
+                          ) {
+
+                            <span
+                              class="transition-current">
+
+                              {{
+                                getStatusLabel(
+                                  item.toStatus
+                                )
+                              }}
+
+                            </span>
+
+                          }
+
+                        </div>
+
+                      }
+
+
+                      @if (
+                        item.performedByName
+                      ) {
+
+                        <div class="performed-by">
+
+                          By
+
+                          <strong>
+                            {{ item.performedByName }}
+                          </strong>
+
+                        </div>
+
+                      }
+
+
+                      @if (item.comment) {
+
+                        <div class="history-comment">
+                          {{ item.comment }}
+                        </div>
+
+                      }
+
+                    </div>
+
+                  </div>
+
+                }
+
+              </div>
+
+            } @else {
+
+              <div class="no-history">
+                No activity recorded yet.
+              </div>
+
+            }
+
+          </section>
+
+        }
+
+      </div>
+
+
+      <!-- DRAWER FOOTER -->
+
+      <div class="drawer-footer">
+
+        <button
+          type="button"
+          class="drawer-close-button"
+          (click)="closeDetails()">
+
+          Close
+
+        </button>
+
+      </div>
+
+    </aside>
+
+  }
+
+
+  <!-- =====================================================
+       CREATE MODAL
+  ====================================================== -->
+
+  @if (showCreate) {
+
+    <div
+      class="create-backdrop"
+      (click)="closeCreate()">
+
+      <div
+        class="create-modal"
+        (click)="$event.stopPropagation()">
+
+
+        <div class="create-header">
+
+          <div class="create-heading">
+
+            <div class="create-heading-icon">
+              +
+            </div>
+
+            <div>
+
+              <div class="create-eyebrow">
+                New Issue
+              </div>
+
+              <h2>Raise an Issue</h2>
+
+              <p>
+                Tell us what happened and attach supporting files.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="modal-close"
+            (click)="closeCreate()">
+
+            ×
+
+          </button>
+
+        </div>
+
+
+        <div class="create-body">
+
+          <div class="form-group">
+
+            <label>
+              Issue Title
+              <span>*</span>
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="title"
+              maxlength="200"
+              placeholder="Briefly describe the issue"
+            />
+
+            <div class="character-count">
+              {{ title.length }}/200
+            </div>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>
+              Description
+              <span>*</span>
+            </label>
+
+            <textarea
+              [(ngModel)]="description"
+              rows="6"
+              maxlength="2000"
+              placeholder="Describe the issue in detail...">
+            </textarea>
+
+            <div class="character-count">
+              {{ description.length }}/2000
+            </div>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>Attachments</label>
+
+            <div class="upload-grid">
+
+              <label class="upload-card">
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  (change)="onPhotoSelected($event)"
+                />
+
+                <div class="upload-icon image-upload">
+                  ◉
+                </div>
+
+                <div class="upload-copy">
+
+                  <strong>
+                    {{
+                      photo
+                        ? photo.name
+                        : 'Add a photo'
+                    }}
+                  </strong>
+
+                  <span>
+                    {{
+                      photo
+                        ? formatFileSize(photo.size)
+                        : 'PNG, JPG, WEBP'
+                    }}
+                  </span>
+
+                </div>
+
+                <span class="upload-action">
+                  {{ photo ? 'Change' : 'Choose' }}
+                </span>
+
+              </label>
+
+
+              <label class="upload-card">
+
+                <input
+                  type="file"
+                  accept="video/*"
+                  (change)="onVideoSelected($event)"
+                />
+
+                <div class="upload-icon video-upload">
+                  ▶
+                </div>
+
+                <div class="upload-copy">
+
+                  <strong>
+                    {{
+                      video
+                        ? video.name
+                        : 'Add a video'
+                    }}
+                  </strong>
+
+                  <span>
+                    {{
+                      video
+                        ? formatFileSize(video.size)
+                        : 'MP4, MOV, WEBM'
+                    }}
+                  </span>
+
+                </div>
+
+                <span class="upload-action">
+                  {{ video ? 'Change' : 'Choose' }}
+                </span>
+
+              </label>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="create-footer">
+
+          <button
+            type="button"
+            class="secondary-button"
+            [disabled]="loading"
+            (click)="closeCreate()">
+
+            Cancel
+
+          </button>
+
+
+          <button
+            type="button"
+            class="create-submit"
+            [disabled]="
+              loading ||
+              !canSubmit
+            "
+            (click)="createIssue()">
+
+            @if (loading) {
+
+              <span class="button-spinner"></span>
+
+              <span>Submitting...</span>
+
+            } @else {
+
+              <span>Raise Issue</span>
+
+              <span>→</span>
+
+            }
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

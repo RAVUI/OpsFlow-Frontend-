@@ -1,0 +1,1014 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.register-page {
+  width: 100%;
+  height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  background: #eef5fc;
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   MAIN CONTAINER
+   ========================================================= */
+
+.register-container {
+  position: relative;
+
+  width: 75%;
+  height: 90%;
+
+  display: flex;
+
+  overflow: hidden;
+
+  border-radius: 28px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 22px 60px rgba(15, 23, 42, 0.14);
+}
+
+
+/* =========================================================
+   LEFT IMAGE
+   ========================================================= */
+
+.visual-section {
+  position: relative;
+
+  width: 55%;
+  height: 100%;
+
+  flex-shrink: 0;
+
+  overflow: hidden;
+
+  background: #e8f3fc;
+}
+
+
+.background-image {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+
+  object-position: left center;
+
+  user-select: none;
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   RIGHT SIDE
+   ========================================================= */
+
+.register-section {
+  position: relative;
+
+  width: 45%;
+  height: 100%;
+
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   REGISTER CARD
+   ========================================================= */
+
+.register-card {
+  width: 100%;
+  max-width: 500px;
+
+  box-sizing: border-box;
+
+  padding: 34px 42px 26px;
+
+  background: #ffffff;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.card-header {
+  margin-bottom: 20px;
+}
+
+
+.eyebrow {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #66758d;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 3px;
+}
+
+
+/* BLUE LINE */
+
+.title-line {
+  width: 45px;
+  height: 4px;
+
+  margin-bottom: 12px;
+
+  border-radius: 10px;
+
+  background: #1683f8;
+}
+
+
+/*
+   Join OpsFlow intentionally removed.
+   Description is now directly below the small header.
+*/
+
+.card-header p {
+  margin: 0;
+
+  max-width: 430px;
+
+  color: #66758d;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.register-form {
+  width: 100%;
+}
+
+
+.form-group {
+  margin-bottom: 13px;
+}
+
+
+.form-group label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #172b4d;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 12px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   INPUT
+   ========================================================= */
+
+.input-wrapper {
+  position: relative;
+
+  width: 100%;
+}
+
+
+.input-wrapper input {
+  width: 100%;
+  height: 45px;
+
+  box-sizing: border-box;
+
+  padding: 0 45px;
+
+  border: 1px solid #d7e0eb;
+
+  border-radius: 9px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #172b4d;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 13px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.input-wrapper input::placeholder {
+  color: #9aa9bd;
+}
+
+
+.input-wrapper input:focus {
+  border-color: #1683f8;
+
+  box-shadow:
+    0 0 0 3px rgba(22, 131, 248, 0.08);
+}
+
+
+/* =========================================================
+   FIELD ICON
+   ========================================================= */
+
+.field-icon {
+  position: absolute;
+
+  left: 14px;
+  top: 50%;
+
+  width: 18px;
+  height: 18px;
+
+  transform: translateY(-50%);
+
+  fill: none;
+
+  stroke: #718096;
+
+  stroke-width: 1.7;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   PASSWORD TOGGLE
+   ========================================================= */
+
+.password-toggle {
+  position: absolute;
+
+  right: 8px;
+  top: 50%;
+
+  width: 30px;
+  height: 30px;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transform: translateY(-50%);
+
+  border: none;
+
+  border-radius: 6px;
+
+  background: transparent;
+
+  color: #64748b;
+
+  cursor: pointer;
+}
+
+
+.password-toggle:hover {
+  color: #1683f8;
+
+  background: #f1f7ff;
+}
+
+
+.password-toggle svg {
+  width: 18px;
+  height: 18px;
+
+  fill: none;
+
+  stroke: currentColor;
+
+  stroke-width: 1.8;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+/* =========================================================
+   ORGANIZATION DROPDOWN
+   ========================================================= */
+
+.custom-dropdown {
+  position: relative;
+
+  width: 100%;
+}
+
+
+.dropdown-trigger {
+  position: relative;
+
+  width: 100%;
+  height: 45px;
+
+  box-sizing: border-box;
+
+  padding: 0 42px 0 45px;
+
+  display: flex;
+  align-items: center;
+
+  border: 1px solid #d7e0eb;
+
+  border-radius: 9px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #172b4d;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 13px;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.dropdown-trigger:hover,
+.dropdown-trigger.open {
+  border-color: #1683f8;
+
+  box-shadow:
+    0 0 0 3px rgba(22, 131, 248, 0.08);
+}
+
+
+.dropdown-trigger.invalid {
+  border-color: #ef4444;
+}
+
+
+.organization-icon {
+  position: absolute;
+
+  left: 14px;
+
+  width: 18px;
+  height: 18px;
+
+  fill: none;
+
+  stroke: #718096;
+
+  stroke-width: 1.7;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+.selected-organization {
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+}
+
+
+.selected-organization.placeholder {
+  color: #9aa9bd;
+}
+
+
+.dropdown-arrow {
+  position: absolute;
+
+  right: 14px;
+
+  width: 16px;
+  height: 16px;
+
+  fill: none;
+
+  stroke: #718096;
+
+  stroke-width: 2;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  transition: transform 0.2s ease;
+}
+
+
+.dropdown-arrow.rotate {
+  transform: rotate(180deg);
+}
+
+
+/* =========================================================
+   DROPDOWN MENU
+   ========================================================= */
+
+.dropdown-menu {
+  position: absolute;
+
+  z-index: 20;
+
+  top: calc(100% + 6px);
+
+  left: 0;
+  right: 0;
+
+  max-height: 180px;
+
+  padding: 5px;
+
+  overflow-y: auto;
+
+  background: #ffffff;
+
+  border: 1px solid #dce4ee;
+
+  border-radius: 10px;
+
+  box-shadow:
+    0 14px 35px rgba(15, 23, 42, 0.16);
+}
+
+
+.dropdown-option {
+  width: 100%;
+
+  min-height: 40px;
+
+  padding: 6px 9px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #334155;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 13px;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+
+.dropdown-option:hover {
+  background: #f1f7ff;
+
+  color: #087ff5;
+}
+
+
+.dropdown-option.selected {
+  background: #edf6ff;
+
+  color: #087ff5;
+
+  font-weight: 600;
+}
+
+
+.option-icon {
+  width: 26px;
+  height: 26px;
+
+  flex: 0 0 26px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 7px;
+
+  background: #eff6ff;
+
+  color: #1683f8;
+}
+
+
+.option-icon svg {
+  width: 15px;
+  height: 15px;
+
+  fill: none;
+
+  stroke: currentColor;
+
+  stroke-width: 1.7;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+.option-name {
+  flex: 1;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+}
+
+
+.option-check {
+  width: 17px;
+  height: 17px;
+
+  fill: none;
+
+  stroke: #1683f8;
+
+  stroke-width: 2;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+.dropdown-empty {
+  padding: 14px;
+
+  color: #94a3b8;
+
+  font-size: 12px;
+
+  text-align: center;
+}
+
+
+/* =========================================================
+   VALIDATION
+   ========================================================= */
+
+.form-group small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #dc2626;
+
+  font-size: 10px;
+
+  line-height: 1.2;
+}
+
+
+/* =========================================================
+   SIGN UP BUTTON
+   ========================================================= */
+
+.register-button {
+  width: 100%;
+  height: 46px;
+
+  margin-top: 3px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  border: none;
+
+  border-radius: 9px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #1683f8,
+      #0875e1
+    );
+
+  color: #ffffff;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 20px rgba(22, 131, 248, 0.20);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+
+.register-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 10px 24px rgba(22, 131, 248, 0.28);
+}
+
+
+.register-button:disabled {
+  opacity: 0.65;
+
+  cursor: not-allowed;
+}
+
+
+.button-arrow {
+  font-size: 19px;
+
+  line-height: 1;
+}
+
+
+/* =========================================================
+   SPINNER
+   ========================================================= */
+
+.spinner {
+  width: 15px;
+  height: 15px;
+
+  border: 2px solid rgba(255, 255, 255, 0.4);
+
+  border-top-color: #ffffff;
+
+  border-radius: 50%;
+
+  animation: spin 0.7s linear infinite;
+}
+
+
+@keyframes spin {
+
+  to {
+    transform: rotate(360deg);
+  }
+
+}
+
+
+/* =========================================================
+   SIGN IN
+   ========================================================= */
+
+.login-link {
+  margin-top: 15px;
+
+  padding-top: 11px;
+
+  border-top: 1px solid #e5eaf0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  color: #64748b;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 12px;
+}
+
+
+.login-link a {
+  color: #087ff5;
+
+  font-weight: 700;
+
+  text-decoration: none;
+}
+
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
+.toast {
+  position: fixed;
+
+  z-index: 100;
+
+  top: 22px;
+  right: 22px;
+
+  width: 410px;
+
+  min-height: 68px;
+
+  box-sizing: border-box;
+
+  padding: 12px 14px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  background: rgba(255, 255, 255, 0.98);
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 12px;
+
+  box-shadow:
+    0 15px 40px rgba(15, 23, 42, 0.18);
+}
+
+
+.toast-error {
+  border-left: 4px solid #ef4444;
+}
+
+
+.toast-success {
+  border-left: 4px solid #22c55e;
+}
+
+
+.toast-icon {
+  width: 36px;
+  height: 36px;
+
+  flex: 0 0 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  font-size: 16px;
+
+  font-weight: 700;
+}
+
+
+.toast-error .toast-icon {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+
+.toast-success .toast-icon {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+
+.toast-content {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+
+.toast-content strong {
+  color: #172b4d;
+
+  font-size: 13px;
+}
+
+
+.toast-content span {
+  color: #64748b;
+
+  font-size: 12px;
+
+  line-height: 1.45;
+}
+
+
+.toast-close {
+  width: 28px;
+  height: 28px;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+
+  border-radius: 6px;
+
+  background: transparent;
+
+  color: #94a3b8;
+
+  font-size: 20px;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+  .register-container {
+    width: 85%;
+  }
+
+  .visual-section {
+    width: 52%;
+  }
+
+  .register-section {
+    width: 48%;
+  }
+
+  .register-card {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+
+}
+
+
+@media (max-width: 850px) {
+
+  .register-container {
+    width: 92%;
+    height: 90%;
+  }
+
+  .visual-section {
+    display: none;
+  }
+
+  .register-section {
+    width: 100%;
+
+    overflow-y: auto;
+  }
+
+  .register-card {
+    max-width: 520px;
+
+    padding: 30px 28px;
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .register-container {
+    width: 100%;
+    height: 100%;
+
+    border-radius: 0;
+  }
+
+  .register-section {
+    overflow-y: auto;
+  }
+
+  .register-card {
+    padding: 26px 20px;
+  }
+
+  .toast {
+    top: 15px;
+    right: 15px;
+
+    width: calc(100vw - 30px);
+  }
+
+}
+
+
+/* =========================================================
+   SHORT LAPTOP SCREEN
+   ========================================================= */
+
+@media (max-height: 760px) and (min-width: 851px) {
+
+  .register-card {
+    padding-top: 25px;
+    padding-bottom: 18px;
+  }
+
+  .card-header {
+    margin-bottom: 15px;
+  }
+
+  .form-group {
+    margin-bottom: 9px;
+  }
+
+  .input-wrapper input,
+  .dropdown-trigger {
+    height: 42px;
+  }
+
+  .register-button {
+    height: 44px;
+  }
+
+  .login-link {
+    margin-top: 10px;
+    padding-top: 8px;
+  }
+
+}

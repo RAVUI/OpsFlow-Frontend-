@@ -1,0 +1,457 @@
+<div
+  class="app-shell"
+  [class.sidebar-collapsed]="sidebarCollapsed"
+>
+
+  <!-- =====================================================
+       SIDEBAR
+  ====================================================== -->
+
+  <aside class="sidebar">
+
+    <!-- BRAND / SIDEBAR TOGGLE -->
+
+    <div class="sidebar-brand">
+
+      <button
+        type="button"
+        class="brand-button"
+        (click)="toggleSidebar()"
+        aria-label="Toggle navigation"
+      >
+
+        <span class="brand-mark">
+          O
+        </span>
+
+        @if (!sidebarCollapsed) {
+
+          <span class="brand-name">
+            Ops<span>Flow</span>
+          </span>
+
+        }
+
+      </button>
+
+    </div>
+
+
+    <!-- ===================================================
+         NAVIGATION
+    ==================================================== -->
+
+    <nav class="sidebar-nav">
+
+
+      <!-- =================================================
+           MANAGER
+      ================================================== -->
+
+      @if (user?.role === 'Manager') {
+
+        <div class="nav-section">
+
+          @if (!sidebarCollapsed) {
+
+            <div class="nav-section-title">
+              WORKSPACE
+            </div>
+
+          }
+
+
+          <!-- DASHBOARD -->
+
+          <a
+            routerLink="/dashboard"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="nav-item"
+            data-tooltip="Dashboard"
+          >
+
+            <span class="nav-icon">
+              <span>⌂</span>
+            </span>
+
+            @if (!sidebarCollapsed) {
+
+              <span class="nav-text">
+                Dashboard
+              </span>
+
+            }
+
+          </a>
+
+
+          <!-- ALL ISSUES -->
+
+          <a
+            routerLink="/all-issues"
+            routerLinkActive="active"
+            class="nav-item"
+            data-tooltip="All Issues"
+          >
+
+            <span class="nav-icon">
+              <span>▤</span>
+            </span>
+
+            @if (!sidebarCollapsed) {
+
+              <span class="nav-text">
+                All Issues
+              </span>
+
+            }
+
+          </a>
+
+
+          <!-- USER MANAGEMENT -->
+
+          <a
+            routerLink="/users"
+            routerLinkActive="active"
+            class="nav-item"
+            data-tooltip="User Management"
+          >
+
+            <span class="nav-icon">
+              <span>♙</span>
+            </span>
+
+            @if (!sidebarCollapsed) {
+
+              <span class="nav-text">
+                User Management
+              </span>
+
+            }
+
+          </a>
+
+        </div>
+
+      }
+
+
+      <!-- =================================================
+           USER
+      ================================================== -->
+
+      @if (user?.role === 'User') {
+
+        <div class="nav-section">
+
+          @if (!sidebarCollapsed) {
+
+            <div class="nav-section-title">
+              REQUESTS
+            </div>
+
+          }
+
+
+          <!-- MY ISSUES -->
+
+          <a
+            routerLink="/my-issues"
+            routerLinkActive="active"
+            class="nav-item"
+            data-tooltip="My Issues"
+          >
+
+            <span class="nav-icon">
+              <span>◫</span>
+            </span>
+
+            @if (!sidebarCollapsed) {
+
+              <span class="nav-text">
+                My Issues
+              </span>
+
+            }
+
+          </a>
+
+        </div>
+
+      }
+
+
+      <!-- =================================================
+           EMPLOYEE
+      ================================================== -->
+
+      @if (user?.role === 'Employee') {
+
+        <div class="nav-section">
+
+          @if (!sidebarCollapsed) {
+
+            <div class="nav-section-title">
+              WORK
+            </div>
+
+          }
+
+
+          <!-- ASSIGNED ISSUES -->
+
+          <a
+            routerLink="/assigned-issues"
+            routerLinkActive="active"
+            class="nav-item"
+            data-tooltip="Assigned Issues"
+          >
+
+            <span class="nav-icon">
+              <span>✓</span>
+            </span>
+
+            @if (!sidebarCollapsed) {
+
+              <span class="nav-text">
+                Assigned Issues
+              </span>
+
+            }
+
+          </a>
+
+        </div>
+
+      }
+
+    </nav>
+
+
+    <!-- ===================================================
+         SIDEBAR BOTTOM
+    ==================================================== -->
+
+    <div class="sidebar-bottom">
+
+
+      <!-- =================================================
+           AI
+      ================================================== -->
+
+      <button
+        type="button"
+        class="ai-button"
+        data-tooltip="OpsFlow AI"
+      >
+
+        <span class="ai-icon">
+          ✦
+        </span>
+
+        @if (!sidebarCollapsed) {
+
+          <span class="ai-details">
+
+            <strong>
+              OpsFlow AI
+            </strong>
+
+            <small>
+              Smart assistance
+            </small>
+
+          </span>
+
+        }
+
+      </button>
+
+
+      <!-- =================================================
+           PROFILE
+      ================================================== -->
+
+      <div class="profile-wrapper">
+
+        <button
+          type="button"
+          class="profile-card"
+          (click)="toggleProfile($event)"
+          data-tooltip="Profile"
+          aria-label="Open profile"
+        >
+
+          <span class="profile-avatar">
+
+            {{
+              user?.name
+                ?.charAt(0)
+                ?.toUpperCase()
+            }}
+
+          </span>
+
+
+          @if (!sidebarCollapsed) {
+
+            <span class="profile-info">
+
+              <strong>
+                {{ user?.name }}
+              </strong>
+
+              <small>
+                {{ user?.role }}
+              </small>
+
+            </span>
+
+
+            <span class="profile-arrow">
+
+              {{
+                profileOpen
+                  ? '▲'
+                  : '▼'
+              }}
+
+            </span>
+
+          }
+
+        </button>
+
+
+        <!-- =================================================
+             PROFILE POPOVER
+        ================================================== -->
+
+        @if (profileOpen) {
+
+          <div
+            class="profile-popover"
+            (click)="$event.stopPropagation()"
+          >
+
+            <!-- PROFILE HEADER -->
+
+            <div class="popover-header">
+
+              <div class="popover-avatar">
+
+                {{
+                  user?.name
+                    ?.charAt(0)
+                    ?.toUpperCase()
+                }}
+
+              </div>
+
+
+              <div class="popover-user">
+
+                <strong>
+                  {{ user?.name }}
+                </strong>
+
+                <span>
+                  {{ user?.email }}
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <!-- PROFILE DETAILS -->
+
+            <div class="popover-details">
+
+              <div class="detail-row">
+
+                <span class="detail-label">
+                  Role
+                </span>
+
+                <span class="detail-value role-value">
+                  {{ user?.role }}
+                </span>
+
+              </div>
+
+
+              <div class="detail-row">
+
+                <span class="detail-label">
+                  Organization
+                </span>
+
+                <span class="detail-value">
+                  {{ user?.organizationName || '-' }}
+                </span>
+
+              </div>
+
+
+              <div class="detail-row">
+
+                <span class="detail-label">
+                  Location
+                </span>
+
+                <span class="detail-value">
+                  {{ user?.location || '-' }}
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <!-- LOGOUT -->
+
+            <button
+              type="button"
+              class="popover-logout"
+              (click)="logout()"
+            >
+
+              <span>
+                ↪
+              </span>
+
+              <span>
+                Logout
+              </span>
+
+            </button>
+
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+  </aside>
+
+
+  <!-- =====================================================
+       MAIN CONTENT
+  ====================================================== -->
+
+  <main class="main-content">
+
+    <section class="page-content">
+
+      <router-outlet></router-outlet>
+
+    </section>
+
+  </main>
+
+</div>

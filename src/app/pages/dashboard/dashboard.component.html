@@ -1,0 +1,939 @@
+<div class="dashboard">
+
+  <!-- HEADER -->
+
+  <div class="dashboard-header">
+
+    <div class="header-content">
+
+      <div class="header-symbol">
+        ✦
+      </div>
+
+      <div>
+        <h1>
+          Issue Dashboard
+        </h1>
+
+        <p>
+          Track and manage all issues in one place.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="header-actions">
+
+      <div class="date-control">
+
+        <span class="calendar-icon">
+          ▣
+        </span>
+
+        <span>
+          {{ dateRangeLabel }}
+        </span>
+
+        <select
+          [value]="selectedPeriod"
+          (change)="onPeriodChange($event)"
+          aria-label="Select dashboard period"
+        >
+          <option value="7">
+            Last 7 Days
+          </option>
+
+          <option value="14">
+            Last 14 Days
+          </option>
+
+          <option value="30">
+            Last 30 Days
+          </option>
+
+        </select>
+
+        <span class="select-arrow">
+          ▾
+        </span>
+
+      </div>
+
+      <button
+        type="button"
+        class="refresh-button"
+        (click)="loadDashboard()"
+        [disabled]="loading"
+      >
+
+        <span
+          class="refresh-icon"
+          [class.spinning]="loading"
+        >
+          ↻
+        </span>
+
+        {{ loading ? 'Refreshing' : 'Refresh' }}
+
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ERROR -->
+
+  @if (errorMessage) {
+
+    <div class="error-banner">
+
+      <div class="error-content">
+
+        <span class="error-icon">
+          !
+        </span>
+
+        <span>
+          {{ errorMessage }}
+        </span>
+
+      </div>
+
+      <button
+        type="button"
+        (click)="loadDashboard()"
+      >
+        Retry
+      </button>
+
+    </div>
+
+  }
+
+
+  <!-- LOADING -->
+
+  @if (loading) {
+
+    <div class="dashboard-loading">
+
+      <div class="loading-spinner"></div>
+
+      <strong>
+        Loading dashboard
+      </strong>
+
+      <span>
+        Fetching the latest issue information...
+      </span>
+
+    </div>
+
+  }
+
+
+  @if (!loading && dashboard) {
+
+    <!-- STATS -->
+
+    <section class="stats-grid">
+
+      <article class="stat-card">
+
+        <div class="stat-top">
+
+          <div class="stat-icon blue">
+            <span>▤</span>
+          </div>
+
+          <span class="stat-label">
+            Total Issues
+          </span>
+
+        </div>
+
+        <strong class="stat-value">
+          {{ totalIssues }}
+        </strong>
+
+        <div class="stat-footer">
+          All recorded issues
+        </div>
+
+      </article>
+
+
+      <article class="stat-card">
+
+        <div class="stat-top">
+
+          <div class="stat-icon red">
+            <span>＋</span>
+          </div>
+
+          <span class="stat-label">
+            Raised
+          </span>
+
+        </div>
+
+        <strong class="stat-value">
+          {{ raisedIssues }}
+        </strong>
+
+        <div class="stat-footer">
+
+          <span class="status-dot raised-dot"></span>
+
+          {{ getPercentage(raisedIssues) }}%
+          of total
+
+        </div>
+
+      </article>
+
+
+      <article class="stat-card">
+
+        <div class="stat-top">
+
+          <div class="stat-icon orange">
+            <span>⚙</span>
+          </div>
+
+          <span class="stat-label">
+            In Progress
+          </span>
+
+        </div>
+
+        <strong class="stat-value">
+          {{ inProgressIssues }}
+        </strong>
+
+        <div class="stat-footer">
+
+          <span class="status-dot progress-dot"></span>
+
+          {{ getPercentage(inProgressIssues) }}%
+          of total
+
+        </div>
+
+      </article>
+
+
+      <article class="stat-card">
+
+        <div class="stat-top">
+
+          <div class="stat-icon purple">
+            <span>◉</span>
+          </div>
+
+          <span class="stat-label">
+            Review
+          </span>
+
+        </div>
+
+        <strong class="stat-value">
+          {{ reviewIssues }}
+        </strong>
+
+        <div class="stat-footer">
+
+          <span class="status-dot review-dot"></span>
+
+          {{ getPercentage(reviewIssues) }}%
+          of total
+
+        </div>
+
+      </article>
+
+
+      <article class="stat-card">
+
+        <div class="stat-top">
+
+          <div class="stat-icon green">
+            <span>✓</span>
+          </div>
+
+          <span class="stat-label">
+            Completed
+          </span>
+
+        </div>
+
+        <strong class="stat-value">
+          {{ closedIssues }}
+        </strong>
+
+        <div class="stat-footer">
+
+          <span class="status-dot completed-dot"></span>
+
+          {{ getPercentage(closedIssues) }}%
+          of total
+
+        </div>
+
+      </article>
+
+
+      <article class="stat-card">
+
+        <div class="stat-top">
+
+          <div class="stat-icon sky">
+            <span>□</span>
+          </div>
+
+          <span class="stat-label">
+            Today
+          </span>
+
+        </div>
+
+        <strong class="stat-value">
+          {{ todayIssues }}
+        </strong>
+
+        <div class="stat-footer">
+          Issues raised today
+        </div>
+
+      </article>
+
+    </section>
+
+
+    <!-- ANALYTICS -->
+
+    <section class="analytics-grid">
+
+
+      <!-- ISSUES OVERVIEW -->
+
+      <article class="analytics-card overview-card">
+
+        <div class="card-header">
+
+          <div>
+
+            <h2>
+              Issues Overview
+            </h2>
+
+            <p>
+              Issue activity across the selected period.
+            </p>
+
+          </div>
+
+          <div class="period-badge">
+            {{ selectedPeriod }} Days
+          </div>
+
+        </div>
+
+
+        <div class="chart-wrapper">
+
+          <svg
+            class="line-chart"
+            viewBox="0 0 760 260"
+            preserveAspectRatio="none"
+          >
+
+            <!-- GRID -->
+
+            @for (
+              tick of yTicks;
+              track $index
+            ) {
+
+              <line
+                class="grid-line"
+                x1="55"
+                x2="705"
+                [attr.y1]="getChartY(tick)"
+                [attr.y2]="getChartY(tick)"
+              />
+
+              <text
+                class="axis-label"
+                x="35"
+                [attr.y]="getChartY(tick) + 4"
+              >
+                {{ tick }}
+              </text>
+
+            }
+
+
+            @for (
+              day of chartDays;
+              track $index
+            ) {
+
+              <line
+                class="vertical-grid"
+                [attr.x1]="getChartX($index)"
+                [attr.x2]="getChartX($index)"
+                y1="20"
+                y2="205"
+              />
+
+            }
+
+
+            <!-- SMOOTH AREAS -->
+
+            <path
+              class="chart-area closed-area"
+              [attr.d]="
+                getAreaPath('closed')
+              "
+            />
+
+            <path
+              class="chart-area review-area"
+              [attr.d]="
+                getAreaPath('review')
+              "
+            />
+
+
+            <!-- SMOOTH LINES -->
+
+            <path
+              class="chart-line raised-line"
+              [attr.d]="
+                getSmoothPath('raised')
+              "
+            />
+
+            <path
+              class="chart-line progress-line"
+              [attr.d]="
+                getSmoothPath('inProgress')
+              "
+            />
+
+            <path
+              class="chart-line review-line"
+              [attr.d]="
+                getSmoothPath('review')
+              "
+            />
+
+            <path
+              class="chart-line closed-line"
+              [attr.d]="
+                getSmoothPath('closed')
+              "
+            />
+
+
+            <!-- DATA POINTS -->
+
+            @for (
+              day of chartDays;
+              track $index
+            ) {
+
+              <circle
+                class="chart-point raised-point"
+                [attr.cx]="getChartX($index)"
+                [attr.cy]="getChartY(day.raised)"
+                r="2.8"
+              />
+
+              <circle
+                class="chart-point progress-point"
+                [attr.cx]="getChartX($index)"
+                [attr.cy]="getChartY(day.inProgress)"
+                r="2.8"
+              />
+
+              <circle
+                class="chart-point review-point"
+                [attr.cx]="getChartX($index)"
+                [attr.cy]="getChartY(day.review)"
+                r="2.8"
+              />
+
+              <circle
+                class="chart-point closed-point"
+                [attr.cx]="getChartX($index)"
+                [attr.cy]="getChartY(day.closed)"
+                r="2.8"
+              />
+
+            }
+
+
+            <!-- X LABELS -->
+
+            @for (
+              day of chartDays;
+              track $index
+            ) {
+
+              @if (
+                selectedPeriod <= 7 ||
+                $index % 5 === 0 ||
+                $index === chartDays.length - 1
+              ) {
+
+                <text
+                  class="x-axis-label"
+                  [attr.x]="getChartX($index)"
+                  y="232"
+                >
+                  {{ day.label }}
+                </text>
+
+              }
+
+            }
+
+          </svg>
+
+        </div>
+
+
+        <!-- LEGEND -->
+
+        <div class="chart-legend">
+
+          <div class="legend-item">
+
+            <span
+              class="legend-dot raised"
+            ></span>
+
+            Raised
+
+          </div>
+
+          <div class="legend-item">
+
+            <span
+              class="legend-dot in-progress"
+            ></span>
+
+            In Progress
+
+          </div>
+
+          <div class="legend-item">
+
+            <span
+              class="legend-dot review"
+            ></span>
+
+            Review
+
+          </div>
+
+          <div class="legend-item">
+
+            <span
+              class="legend-dot completed"
+            ></span>
+
+            Completed
+
+          </div>
+
+        </div>
+
+      </article>
+
+
+      <!-- ISSUES BY STATUS -->
+
+      <article class="analytics-card status-card">
+
+        <div class="card-header">
+
+          <div>
+
+            <h2>
+              Issues by Status
+            </h2>
+
+            <p>
+              Current distribution of all issues.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="donut-content">
+
+          <!-- DONUT -->
+
+          <div class="donut-wrapper">
+
+            <div
+              class="donut"
+              [style.background]="donutStyle"
+            >
+
+              <div class="donut-center">
+
+                <strong>
+                  {{ totalIssues }}
+                </strong>
+
+                <span>
+                  Total Issues
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- LEGEND -->
+
+          <div class="status-legend">
+
+            <div class="status-legend-item">
+
+              <span
+                class="legend-dot raised"
+              ></span>
+
+              <div class="legend-name">
+
+                <strong>
+                  Raised
+                </strong>
+
+                <span>
+                  {{ getPercentage(raisedIssues) }}%
+                </span>
+
+              </div>
+
+              <strong class="legend-count">
+                {{ raisedIssues }}
+              </strong>
+
+            </div>
+
+
+            <div class="status-legend-item">
+
+              <span
+                class="legend-dot in-progress"
+              ></span>
+
+              <div class="legend-name">
+
+                <strong>
+                  In Progress
+                </strong>
+
+                <span>
+                  {{ getPercentage(inProgressIssues) }}%
+                </span>
+
+              </div>
+
+              <strong class="legend-count">
+                {{ inProgressIssues }}
+              </strong>
+
+            </div>
+
+
+            <div class="status-legend-item">
+
+              <span
+                class="legend-dot review"
+              ></span>
+
+              <div class="legend-name">
+
+                <strong>
+                  Review
+                </strong>
+
+                <span>
+                  {{ getPercentage(reviewIssues) }}%
+                </span>
+
+              </div>
+
+              <strong class="legend-count">
+                {{ reviewIssues }}
+              </strong>
+
+            </div>
+
+
+            <div class="status-legend-item">
+
+              <span
+                class="legend-dot completed"
+              ></span>
+
+              <div class="legend-name">
+
+                <strong>
+                  Completed
+                </strong>
+
+                <span>
+                  {{ getPercentage(closedIssues) }}%
+                </span>
+
+              </div>
+
+              <strong class="legend-count">
+                {{ closedIssues }}
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </article>
+
+    </section>
+
+
+    <!-- RECENT ISSUES -->
+
+    <section class="recent-card">
+
+      <div class="recent-header">
+
+        <div>
+
+          <h2>
+            Recent Issues
+          </h2>
+
+          <p>
+            Latest issues received by OpsFlow.
+          </p>
+
+        </div>
+
+        <a
+          routerLink="/all-issues"
+          class="view-all"
+        >
+          View All
+          <span>→</span>
+        </a>
+
+      </div>
+
+
+      @if (recentIssues.length === 0) {
+
+        <div class="empty-state">
+
+          <div class="empty-icon">
+            ✓
+          </div>
+
+          <strong>
+            No issues found
+          </strong>
+
+          <span>
+            There are no recent issues to display.
+          </span>
+
+        </div>
+
+      }
+
+
+      @if (recentIssues.length > 0) {
+
+        <div class="table-wrapper">
+
+          <table class="issues-table">
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  #
+                </th>
+
+                <th>
+                  Title
+                </th>
+
+                <th>
+                  Status
+                </th>
+
+                <th>
+                  Raised By
+                </th>
+
+                <th>
+                  Assignee
+                </th>
+
+                <th>
+                  Organization
+                </th>
+
+                <th>
+                  Created On
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              @for (
+                issue of recentIssues;
+                track issue.id
+              ) {
+
+                <tr>
+
+                  <td class="issue-id">
+                    #{{ issue.id }}
+                  </td>
+
+                  <td>
+
+                    <div class="issue-title">
+
+                      <strong>
+                        {{ issue.title }}
+                      </strong>
+
+                    </div>
+
+                  </td>
+
+                  <td>
+
+                    <span
+                      class="status-badge"
+                      [ngClass]="
+                        getStatusClass(
+                          issue.status
+                        )
+                      "
+                    >
+
+                      <span class="badge-dot"></span>
+
+                      {{ getStatusLabel(
+                        issue.status
+                      ) }}
+
+                    </span>
+
+                  </td>
+
+                  <td>
+
+                    <div class="person-cell">
+
+                      <div class="avatar raised-avatar">
+
+                        {{
+                          issue.raisedByName
+                            .charAt(0)
+                            .toUpperCase()
+                        }}
+
+                      </div>
+
+                      <span>
+                        {{ issue.raisedByName }}
+                      </span>
+
+                    </div>
+
+                  </td>
+
+                  <td>
+
+                    <div class="person-cell">
+
+                      <div class="avatar assigned-avatar">
+
+                        {{
+                          getAssignee(issue)
+                            .charAt(0)
+                            .toUpperCase()
+                        }}
+
+                      </div>
+
+                      <span>
+                        {{ getAssignee(issue) }}
+                      </span>
+
+                    </div>
+
+                  </td>
+
+                  <td>
+
+                    <span class="organization-name">
+                      {{
+                        issue.organizationName || '-'
+                      }}
+                    </span>
+
+                  </td>
+
+                  <td>
+
+                    <span class="created-date">
+                      {{
+                        issue.createdAt
+                          | date:'MMM d, y h:mm a'
+                      }}
+                    </span>
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      }
+
+    </section>
+
+  }
+
+</div>

@@ -1,0 +1,866 @@
+<div class="users-page">
+
+  <!-- =====================================================
+       HEADER
+  ====================================================== -->
+
+  <div class="page-header">
+
+    <div class="page-title-section">
+
+      <div class="page-title-icon">
+        <span>♙</span>
+      </div>
+
+      <div>
+
+        <h1>
+          Users
+        </h1>
+
+        <p>
+          Manage users, roles and organization access
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <div class="page-actions">
+
+      <!-- SEARCH -->
+
+      <div class="search-box">
+
+        <span class="search-icon">
+          ⌕
+        </span>
+
+        <input
+          type="text"
+          [(ngModel)]="searchText"
+          placeholder="Search users..."
+          (keydown)="onSearchKeydown($event)"
+        />
+
+        @if (searchText) {
+
+          <button
+            type="button"
+            class="search-clear"
+            (click)="clearFilters()"
+          >
+            ×
+          </button>
+
+        }
+
+      </div>
+
+
+      <!-- ROLE FILTER -->
+
+      <div
+        class="custom-dropdown role-filter-dropdown"
+      >
+
+        <button
+          type="button"
+          class="dropdown-trigger"
+          [class.open]="roleDropdownOpen"
+          (click)="toggleRoleDropdown($event)"
+        >
+
+          <span>
+            {{ selectedRoleName }}
+          </span>
+
+          <span class="dropdown-chevron">
+            {{ roleDropdownOpen ? '⌃' : '⌄' }}
+          </span>
+
+        </button>
+
+
+        @if (roleDropdownOpen) {
+
+          <div class="dropdown-menu">
+
+            <button
+              type="button"
+              class="dropdown-option"
+              [class.selected]="!selectedRole"
+              (click)="selectRole('')"
+            >
+
+              <span class="option-check">
+                @if (!selectedRole) {
+                  ✓
+                }
+              </span>
+
+              <span>
+                All Roles
+              </span>
+
+            </button>
+
+
+            <button
+              type="button"
+              class="dropdown-option"
+              [class.selected]="
+                selectedRole === 'User'
+              "
+              (click)="selectRole('User')"
+            >
+
+              <span class="option-check">
+                @if (selectedRole === 'User') {
+                  ✓
+                }
+              </span>
+
+              <span class="option-role-dot user-dot"></span>
+
+              <span>
+                User
+              </span>
+
+            </button>
+
+
+            <button
+              type="button"
+              class="dropdown-option"
+              [class.selected]="
+                selectedRole === 'Employee'
+              "
+              (click)="selectRole('Employee')"
+            >
+
+              <span class="option-check">
+                @if (selectedRole === 'Employee') {
+                  ✓
+                }
+              </span>
+
+              <span class="option-role-dot employee-dot"></span>
+
+              <span>
+                Employee
+              </span>
+
+            </button>
+
+
+            <button
+              type="button"
+              class="dropdown-option"
+              [class.selected]="
+                selectedRole === 'Manager'
+              "
+              (click)="selectRole('Manager')"
+            >
+
+              <span class="option-check">
+                @if (selectedRole === 'Manager') {
+                  ✓
+                }
+              </span>
+
+              <span class="option-role-dot manager-dot"></span>
+
+              <span>
+                Manager
+              </span>
+
+            </button>
+
+          </div>
+
+        }
+
+      </div>
+
+
+      <!-- ORGANIZATION FILTER -->
+
+      <div
+        class="custom-dropdown organization-filter-dropdown"
+      >
+
+        <button
+          type="button"
+          class="dropdown-trigger"
+          [class.open]="
+            organizationDropdownOpen
+          "
+          (click)="
+            toggleOrganizationDropdown($event)
+          "
+        >
+
+          <span>
+            {{ selectedOrganizationName }}
+          </span>
+
+          <span class="dropdown-chevron">
+            {{
+              organizationDropdownOpen
+                ? '⌃'
+                : '⌄'
+            }}
+          </span>
+
+        </button>
+
+
+        @if (organizationDropdownOpen) {
+
+          <div class="dropdown-menu organization-menu">
+
+            <button
+              type="button"
+              class="dropdown-option"
+              [class.selected]="
+                !selectedOrganization
+              "
+              (click)="
+                selectOrganization('')
+              "
+            >
+
+              <span class="option-check">
+                @if (!selectedOrganization) {
+                  ✓
+                }
+              </span>
+
+              <span>
+                All Organizations
+              </span>
+
+            </button>
+
+
+            @for (
+              organization of organizations;
+              track organization.id
+            ) {
+
+              <button
+                type="button"
+                class="dropdown-option"
+                [class.selected]="
+                  selectedOrganization ===
+                  organization.id
+                "
+                (click)="
+                  selectOrganization(
+                    organization.id
+                  )
+                "
+              >
+
+                <span class="option-check">
+
+                  @if (
+                    selectedOrganization ===
+                    organization.id
+                  ) {
+                    ✓
+                  }
+
+                </span>
+
+                <span class="organization-option-icon">
+                  ▦
+                </span>
+
+                <span>
+                  {{ organization.name }}
+                </span>
+
+              </button>
+
+            }
+
+          </div>
+
+        }
+
+      </div>
+
+
+      <!-- CLEAR -->
+
+      @if (
+        searchText ||
+        selectedRole ||
+        selectedOrganization
+      ) {
+
+        <button
+          type="button"
+          class="clear-filters-button"
+          (click)="clearFilters()"
+        >
+          Clear
+        </button>
+
+      }
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       MESSAGES
+  ====================================================== -->
+
+  @if (successMessage) {
+
+    <div class="message success-message">
+
+      <div class="message-left">
+
+        <span class="message-icon">
+          ✓
+        </span>
+
+        <span>
+          {{ successMessage }}
+        </span>
+
+      </div>
+
+      <button
+        type="button"
+        (click)="successMessage = ''"
+      >
+        ×
+      </button>
+
+    </div>
+
+  }
+
+
+  @if (errorMessage) {
+
+    <div class="message error-message">
+
+      <div class="message-left">
+
+        <span class="message-icon">
+          !
+        </span>
+
+        <span>
+          {{ errorMessage }}
+        </span>
+
+      </div>
+
+      <button
+        type="button"
+        (click)="errorMessage = ''"
+      >
+        ×
+      </button>
+
+    </div>
+
+  }
+
+
+  <!-- =====================================================
+       CONTENT HEADER
+  ====================================================== -->
+
+  <div class="content-toolbar">
+
+    <div class="results-info">
+
+      <strong>
+        {{ users.length }}
+      </strong>
+
+      <span>
+        {{ users.length === 1 ? 'user' : 'users' }}
+      </span>
+
+    </div>
+
+    <div class="results-description">
+
+      @if (
+        searchText ||
+        selectedRole ||
+        selectedOrganization
+      ) {
+
+        Showing filtered users
+
+      } @else {
+
+        All registered users
+
+      }
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       LOADING
+  ====================================================== -->
+
+  @if (loading) {
+
+    <div class="users-state">
+
+      <div class="loader"></div>
+
+      <strong>
+        Loading users
+      </strong>
+
+      <span>
+        Fetching users and organization details...
+      </span>
+
+    </div>
+
+  }
+
+
+  <!-- =====================================================
+       EMPTY
+  ====================================================== -->
+
+  @else if (users.length === 0) {
+
+    <div class="users-state empty-state">
+
+      <div class="empty-icon">
+        ♙
+      </div>
+
+      <strong>
+        No users found
+      </strong>
+
+      <span>
+        Try changing your search or filters.
+      </span>
+
+      @if (
+        searchText ||
+        selectedRole ||
+        selectedOrganization
+      ) {
+
+        <button
+          type="button"
+          class="empty-clear-button"
+          (click)="clearFilters()"
+        >
+          Clear Filters
+        </button>
+
+      }
+
+    </div>
+
+  }
+
+
+  <!-- =====================================================
+       USER CARDS
+  ====================================================== -->
+
+  @else {
+
+    <div class="users-grid">
+
+      @for (
+        user of users;
+        track user.userId
+      ) {
+
+        <article
+          class="user-card"
+          [class.updating]="
+            updatingUserId === user.userId
+          "
+        >
+
+          <!-- CARD TOP -->
+
+          <div class="card-top">
+
+            <div class="organization-heading">
+
+              <span class="organization-icon">
+                ▦
+              </span>
+
+              <span
+                class="organization-title"
+                [title]="user.organizationName"
+              >
+                {{ user.organizationName || '-' }}
+              </span>
+
+            </div>
+
+            <div class="card-menu-dot">
+              •••
+            </div>
+
+          </div>
+
+
+          <!-- PROFILE -->
+
+          <div class="profile-section">
+
+            <div
+              class="profile-avatar"
+              [ngClass]="
+                getAvatarClass(user)
+              "
+            >
+
+              {{
+                getInitial(user.name)
+              }}
+
+            </div>
+
+
+            <h2>
+              {{ user.name }}
+            </h2>
+
+            <div class="email-row">
+
+              <span>
+                {{ user.email }}
+              </span>
+
+              <button
+                type="button"
+                class="copy-email"
+                [attr.aria-label]="
+                  'Email: ' + user.email
+                "
+              >
+                □
+              </button>
+
+            </div>
+
+
+            <!-- CURRENT ROLE -->
+
+            <div
+              class="role-pill"
+              [ngClass]="
+                getRoleClass(user.role)
+              "
+            >
+
+              <span class="role-pill-icon">
+
+                @if (user.role === 'Manager') {
+                  ♛
+                }
+
+                @if (user.role === 'Employee') {
+                  ◆
+                }
+
+                @if (user.role === 'User') {
+                  ♙
+                }
+
+              </span>
+
+              {{ getRoleLabel(user.role) }}
+
+            </div>
+
+          </div>
+
+
+          <!-- DIVIDER -->
+
+          <div class="card-divider"></div>
+
+
+          <!-- DETAILS -->
+
+          <div class="user-details">
+
+            <div class="detail-item">
+
+              <div class="detail-icon">
+                ▦
+              </div>
+
+              <div class="detail-content">
+
+                <span class="detail-label">
+                  Organization
+                </span>
+
+                <strong
+                  [title]="user.organizationName"
+                >
+                  {{ user.organizationName || '-' }}
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <div class="detail-separator"></div>
+
+
+            <div class="detail-item">
+
+              <div class="detail-icon">
+                ◉
+              </div>
+
+              <div class="detail-content">
+
+                <span class="detail-label">
+                  Location
+                </span>
+
+                <strong
+                  [title]="user.location || '-'"
+                >
+                  {{ user.location || '-' }}
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- ROLE UPDATE -->
+
+          <div class="card-actions">
+
+            <div
+              class="role-update-wrapper custom-dropdown"
+            >
+
+              <button
+                type="button"
+                class="update-role-button"
+                [class.open]="
+                  roleUpdateDropdownUserId ===
+                  user.userId
+                "
+                [disabled]="
+                  updatingUserId ===
+                  user.userId
+                "
+                (click)="
+                  toggleRoleUpdateDropdown(
+                    user.userId,
+                    $event
+                  )
+                "
+              >
+
+                <span class="update-role-icon">
+                  ✎
+                </span>
+
+                <span>
+                  Update Role
+                </span>
+
+                @if (
+                  updatingUserId ===
+                  user.userId
+                ) {
+
+                  <span class="mini-spinner"></span>
+
+                } @else {
+
+                  <span class="action-chevron">
+                    {{
+                      roleUpdateDropdownUserId ===
+                      user.userId
+                        ? '⌃'
+                        : '⌄'
+                    }}
+                  </span>
+
+                }
+
+              </button>
+
+
+              @if (
+                roleUpdateDropdownUserId ===
+                user.userId
+              ) {
+
+                <div
+                  class="
+                    dropdown-menu
+                    role-update-menu
+                  "
+                >
+
+                  <div class="role-menu-title">
+                    Change role
+                  </div>
+
+
+                  <button
+                    type="button"
+                    class="dropdown-option"
+                    [class.selected]="
+                      user.role === 'User'
+                    "
+                    (click)="
+                      updateRole(
+                        user,
+                        'User'
+                      )
+                    "
+                  >
+
+                    <span class="option-check">
+
+                      @if (
+                        user.role === 'User'
+                      ) {
+                        ✓
+                      }
+
+                    </span>
+
+                    <span
+                      class="
+                        option-role-dot
+                        user-dot
+                      "
+                    ></span>
+
+                    <span>
+                      User
+                    </span>
+
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="dropdown-option"
+                    [class.selected]="
+                      user.role === 'Employee'
+                    "
+                    (click)="
+                      updateRole(
+                        user,
+                        'Employee'
+                      )
+                    "
+                  >
+
+                    <span class="option-check">
+
+                      @if (
+                        user.role === 'Employee'
+                      ) {
+                        ✓
+                      }
+
+                    </span>
+
+                    <span
+                      class="
+                        option-role-dot
+                        employee-dot
+                      "
+                    ></span>
+
+                    <span>
+                      Employee
+                    </span>
+
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="dropdown-option"
+                    [class.selected]="
+                      user.role === 'Manager'
+                    "
+                    (click)="
+                      updateRole(
+                        user,
+                        'Manager'
+                      )
+                    "
+                  >
+
+                    <span class="option-check">
+
+                      @if (
+                        user.role === 'Manager'
+                      ) {
+                        ✓
+                      }
+
+                    </span>
+
+                    <span
+                      class="
+                        option-role-dot
+                        manager-dot
+                      "
+                    ></span>
+
+                    <span>
+                      Manager
+                    </span>
+
+                  </button>
+
+                </div>
+
+              }
+
+            </div>
+
+          </div>
+
+        </article>
+
+      }
+
+    </div>
+
+  }
+
+</div>

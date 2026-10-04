@@ -1,0 +1,1080 @@
+/* =========================================================
+   APP SHELL
+========================================================= */
+
+.app-shell {
+  width: 100%;
+  height: 100vh;
+
+  display: flex;
+
+  padding: 16px;
+  gap: 16px;
+
+  background: #f5f7fb;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar {
+  position: relative;
+
+  width: 248px;
+  height: calc(100vh - 32px);
+
+  flex-shrink: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #ffffff;
+
+  border: 1px solid #e7ebf2;
+
+  border-radius: 22px;
+
+  box-shadow:
+    0 8px 30px rgba(15, 23, 42, 0.06);
+
+  padding: 18px 12px;
+
+  box-sizing: border-box;
+
+  overflow: visible;
+
+  transition:
+    width 0.25s ease;
+}
+
+
+/* =========================================================
+   COLLAPSED SIDEBAR
+========================================================= */
+
+.sidebar-collapsed .sidebar {
+  width: 76px;
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.sidebar-brand {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  margin-bottom: 28px;
+}
+
+
+.brand-button {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  justify-content: flex-start;
+
+  gap: 10px;
+
+  padding: 4px;
+
+  border: none;
+
+  background: transparent;
+
+  cursor: pointer;
+
+  color: #111827;
+}
+
+
+/* =========================================================
+   PROFESSIONAL O LOGO
+========================================================= */
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+
+  color: #2563eb;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 26px;
+  font-weight: 500;
+
+  line-height: 1;
+
+  border: none;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+.brand-button:hover .brand-mark {
+  color: #1d4ed8;
+
+  transform: scale(1.04);
+}
+
+
+.brand-name {
+  color: #111827;
+
+  font-size: 21px;
+  font-weight: 800;
+
+  letter-spacing: -0.5px;
+}
+
+
+.brand-name span {
+  color: #2563eb;
+}
+
+
+/* =========================================================
+   COLLAPSED BRAND
+========================================================= */
+
+.sidebar-collapsed .brand-button {
+  justify-content: center;
+}
+
+
+.sidebar-collapsed .sidebar-brand {
+  justify-content: center;
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.sidebar-nav {
+  flex: 1;
+
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow-y: auto;
+  overflow-x: visible;
+
+  scrollbar-width: none;
+}
+
+
+.sidebar-nav::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* =========================================================
+   NAV SECTION
+========================================================= */
+
+.nav-section {
+  margin-bottom: 22px;
+}
+
+
+.nav-section-title {
+  padding: 0 12px;
+
+  margin-bottom: 9px;
+
+  color: #98a2b3;
+
+  font-size: 10px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.2px;
+}
+
+
+/* =========================================================
+   NAV ITEM
+========================================================= */
+
+.nav-item {
+  position: relative;
+
+  width: 100%;
+  min-height: 44px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 0 12px;
+
+  margin-bottom: 5px;
+
+  box-sizing: border-box;
+
+  border-radius: 11px;
+
+  color: #667085;
+
+  text-decoration: none;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+.nav-item:hover {
+  background: #f1f5ff;
+
+  color: #2563eb;
+}
+
+
+.nav-item.active {
+  background: #eaf1ff;
+
+  color: #2563eb;
+
+  font-weight: 600;
+}
+
+
+.nav-item.active::before {
+  content: '';
+
+  position: absolute;
+
+  left: 0;
+  top: 9px;
+
+  width: 3px;
+  height: 26px;
+
+  border-radius: 0 4px 4px 0;
+
+  background: #2563eb;
+}
+
+
+/* =========================================================
+   NAV ICONS
+========================================================= */
+
+.nav-icon {
+  width: 22px;
+  min-width: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: currentColor;
+
+  font-size: 20px;
+
+  font-weight: 900;
+
+  line-height: 1;
+
+  -webkit-text-stroke:
+    0.35px currentColor;
+}
+
+
+.nav-icon span {
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   NAV TEXT
+========================================================= */
+
+.nav-text {
+  font-size: 13px;
+
+  font-weight: 500;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   COLLAPSED NAV
+========================================================= */
+
+.sidebar-collapsed .nav-item {
+  justify-content: center;
+
+  padding: 0;
+
+  gap: 0;
+}
+
+
+.sidebar-collapsed .nav-item.active::before {
+  left: -1px;
+}
+
+
+.sidebar-collapsed .nav-icon {
+  font-size: 21px;
+
+  font-weight: 900;
+
+  -webkit-text-stroke:
+    0.45px currentColor;
+}
+
+
+.sidebar-collapsed .nav-section {
+  margin-bottom: 12px;
+}
+
+
+/* =========================================================
+   CUSTOM TOOLTIP
+========================================================= */
+
+.nav-item[data-tooltip],
+.ai-button[data-tooltip],
+.profile-card[data-tooltip] {
+  position: relative;
+}
+
+
+/* Tooltip body */
+
+.nav-item[data-tooltip]::after,
+.ai-button[data-tooltip]::after,
+.profile-card[data-tooltip]::after {
+
+  content: attr(data-tooltip);
+
+  position: absolute;
+
+  left: calc(100% + 13px);
+
+  top: 50%;
+
+  transform:
+    translateY(-50%)
+    translateX(-5px);
+
+  padding: 8px 11px;
+
+  border-radius: 7px;
+
+  background: #1f2937;
+
+  color: #ffffff;
+
+  font-size: 11px;
+
+  font-weight: 500;
+
+  line-height: 1;
+
+  white-space: nowrap;
+
+  opacity: 0;
+
+  visibility: hidden;
+
+  pointer-events: none;
+
+  z-index: 5000;
+
+  box-shadow:
+    0 7px 20px rgba(15, 23, 42, 0.16);
+
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    visibility 0.15s ease;
+}
+
+
+/* Tooltip arrow */
+
+.nav-item[data-tooltip]::before,
+.ai-button[data-tooltip]::before,
+.profile-card[data-tooltip]::before {
+
+  content: '';
+
+  position: absolute;
+
+  left: calc(100% + 8px);
+
+  top: 50%;
+
+  width: 7px;
+  height: 7px;
+
+  background: #1f2937;
+
+  transform:
+    translateY(-50%)
+    rotate(45deg);
+
+  opacity: 0;
+
+  visibility: hidden;
+
+  pointer-events: none;
+
+  z-index: 4999;
+
+  transition:
+    opacity 0.15s ease,
+    visibility 0.15s ease;
+}
+
+
+/* Show tooltip only when collapsed */
+
+.sidebar-collapsed
+.nav-item[data-tooltip]:hover::after,
+
+.sidebar-collapsed
+.ai-button[data-tooltip]:hover::after,
+
+.sidebar-collapsed
+.profile-card[data-tooltip]:hover::after {
+
+  opacity: 1;
+
+  visibility: visible;
+
+  transform:
+    translateY(-50%)
+    translateX(0);
+}
+
+
+.sidebar-collapsed
+.nav-item[data-tooltip]:hover::before,
+
+.sidebar-collapsed
+.ai-button[data-tooltip]:hover::before,
+
+.sidebar-collapsed
+.profile-card[data-tooltip]:hover::before {
+
+  opacity: 1;
+
+  visibility: visible;
+}
+
+
+/* =========================================================
+   SIDEBAR BOTTOM
+========================================================= */
+
+.sidebar-bottom {
+  margin-top: auto;
+
+  padding-top: 12px;
+}
+
+
+/* =========================================================
+   AI BUTTON
+========================================================= */
+
+.ai-button {
+  width: 100%;
+  min-height: 52px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 8px 9px;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 12px;
+
+  background: #f8faff;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+
+.ai-button:hover {
+  background: #f1f5ff;
+
+  border-color: #cbdcff;
+}
+
+
+.ai-icon {
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9px;
+
+  background: #2563eb;
+
+  color: #ffffff;
+
+  font-size: 18px;
+
+  font-weight: 700;
+}
+
+
+.ai-details {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+
+.ai-details strong {
+  color: #1f2937;
+
+  font-size: 12px;
+}
+
+
+.ai-details small {
+  margin-top: 2px;
+
+  color: #98a2b3;
+
+  font-size: 9px;
+}
+
+
+/* =========================================================
+   COLLAPSED AI
+========================================================= */
+
+.sidebar-collapsed .ai-button {
+  justify-content: center;
+
+  padding: 8px;
+}
+
+
+/* =========================================================
+   PROFILE WRAPPER
+========================================================= */
+
+.profile-wrapper {
+  position: relative;
+
+  width: 100%;
+
+  margin-top: 10px;
+}
+
+
+/* =========================================================
+   PROFILE CARD
+========================================================= */
+
+.profile-card {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 8px;
+
+  border: 1px solid #e7ebf2;
+
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  box-sizing: border-box;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+
+.profile-card:hover {
+  background: #f8faff;
+
+  border-color: #dbe4f0;
+}
+
+
+/* =========================================================
+   PROFILE AVATAR
+========================================================= */
+
+.profile-avatar {
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #eaf1ff;
+
+  color: #2563eb;
+
+  font-size: 13px;
+
+  font-weight: 800;
+}
+
+
+.profile-info {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+}
+
+
+.profile-info strong {
+  overflow: hidden;
+
+  color: #1f2937;
+
+  font-size: 12px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.profile-info small {
+  margin-top: 2px;
+
+  color: #98a2b3;
+
+  font-size: 10px;
+}
+
+
+.profile-arrow {
+  color: #98a2b3;
+
+  font-size: 8px;
+}
+
+
+/* =========================================================
+   COLLAPSED PROFILE
+========================================================= */
+
+.sidebar-collapsed .profile-card {
+  justify-content: center;
+
+  padding: 7px;
+}
+
+
+/* =========================================================
+   PROFILE POPOVER
+========================================================= */
+
+.profile-popover {
+  position: absolute;
+
+  left: calc(100% + 12px);
+
+  bottom: 0;
+
+  width: 310px;
+
+  padding: 18px;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border: 1px solid #e5eaf1;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 18px 45px rgba(15, 23, 42, 0.13);
+
+  z-index: 2000;
+
+  animation:
+    popover-in 0.16s ease-out;
+}
+
+
+@keyframes popover-in {
+
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* =========================================================
+   POPOVER HEADER
+========================================================= */
+
+.popover-header {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding-bottom: 15px;
+
+  border-bottom:
+    1px solid #edf0f5;
+}
+
+
+.popover-avatar {
+  width: 46px;
+  height: 46px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #eaf1ff;
+
+  color: #2563eb;
+
+  font-size: 17px;
+
+  font-weight: 800;
+}
+
+
+.popover-user {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+
+.popover-user strong {
+  color: #111827;
+
+  font-size: 14px;
+}
+
+
+.popover-user span {
+  margin-top: 4px;
+
+  overflow: hidden;
+
+  color: #667085;
+
+  font-size: 11px;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   POPOVER DETAILS
+========================================================= */
+
+.popover-details {
+  padding: 12px 0;
+}
+
+
+.detail-row {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 18px;
+
+  padding: 9px 0;
+}
+
+
+.detail-label {
+  color: #98a2b3;
+
+  font-size: 11px;
+}
+
+
+.detail-value {
+  max-width: 180px;
+
+  color: #344054;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  text-align: right;
+
+  word-break: break-word;
+}
+
+
+.role-value {
+  color: #2563eb;
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+.popover-logout {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  padding: 10px;
+
+  border: 1px solid #fecaca;
+
+  border-radius: 9px;
+
+  background: #fff7f7;
+
+  color: #dc2626;
+
+  cursor: pointer;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  transition:
+    background 0.2s ease;
+}
+
+
+.popover-logout:hover {
+  background: #fee2e2;
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
+
+.main-content {
+  flex: 1;
+
+  min-width: 0;
+  min-height: 0;
+
+  height: calc(100vh - 32px);
+
+  overflow: hidden;
+}
+
+
+.page-content {
+  width: 100%;
+  height: 100%;
+
+  box-sizing: border-box;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding: 4px;
+
+  scrollbar-width: thin;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .app-shell {
+    padding: 12px;
+
+    gap: 12px;
+  }
+
+
+  .sidebar {
+    height: calc(100vh - 24px);
+  }
+
+
+  .main-content {
+    height: calc(100vh - 24px);
+  }
+
+
+  .profile-popover {
+    width: 290px;
+  }
+}
+
+
+@media (max-width: 650px) {
+
+  .app-shell {
+    padding: 10px;
+  }
+
+
+  .sidebar {
+    width: 68px;
+
+    height: calc(100vh - 20px);
+
+    padding: 14px 9px;
+
+    border-radius: 18px;
+  }
+
+
+  .sidebar-collapsed .sidebar {
+    width: 68px;
+  }
+
+
+  .brand-name,
+  .nav-section-title,
+  .nav-text,
+  .ai-details,
+  .profile-info,
+  .profile-arrow {
+    display: none;
+  }
+
+
+  .brand-button {
+    justify-content: center;
+  }
+
+
+  .nav-item {
+    justify-content: center;
+
+    padding: 0;
+  }
+
+
+  .ai-button {
+    justify-content: center;
+
+    padding: 8px;
+  }
+
+
+  .profile-card {
+    justify-content: center;
+
+    padding: 7px;
+  }
+
+
+  .profile-popover {
+    position: fixed;
+
+    left: 84px;
+
+    bottom: 20px;
+
+    width: min(
+      310px,
+      calc(100vw - 104px)
+    );
+  }
+
+
+  .main-content {
+    height: calc(100vh - 20px);
+  }
+
+
+  .page-content {
+    padding: 2px;
+  }
+}
